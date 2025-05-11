@@ -173,7 +173,7 @@
 }
 
 .settings-section {
-    margin-top: 40px;
+    margin-top: 20px;
     padding-top: 20px;
     border-top: 1px solid var(--border);
     position: relative;
@@ -181,7 +181,7 @@
 
 .settings-title {
     font-size: 1.2rem;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     color: var(--primary);
     display: flex;
     justify-content: space-between;
@@ -282,7 +282,7 @@
 
 /* Task list section */
 .task-list-section {
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .task-input-container {
@@ -359,7 +359,7 @@
 }
 
 .notifications {
-    margin-top: 20px;
+    margin-top: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
