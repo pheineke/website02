@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  planner:
+    build: .
+    container_name: planner-app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      # For development: mount code for hot reloading
+      # Comment out in production
+      - ./:/app
+    environment:
+      - FLASK_ENV=production
+      # Add any other environment variables here

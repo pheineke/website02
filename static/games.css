@@ -1,0 +1,224 @@
+/* Additional styles specific to the games hub */
+:root {
+    /* Adding CSS variables for consistent theming */
+    --card-hover-transform: translateY(-5px);
+    --transition-speed: 0.3s;
+}
+
+.tool-card.game-card {
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-card.game-card:hover {
+    transform: var(--card-hover-transform);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.tool-card.game-card .card-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.tool-card.game-card .card-description {
+    flex-grow: 1;
+}
+
+.tool-card.game-card .card-image {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    height: 180px; /* Consistent height for all cards */
+}
+
+.tool-card.game-card .card-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    transition: background-color var(--transition-speed) ease;
+}
+
+.tool-card.game-card:hover .card-image::after {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.tool-card.game-card .card-image i {
+    position: relative;
+    z-index: 1;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--accent);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    z-index: 2;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 12px;
+}
+
+.game-stats span {
+    display: flex;
+    align-items: center;
+}
+
+.game-stats i {
+    margin-right: 5px;
+}
+
+/* Custom colors for game categories */
+.puzzle {
+    background-color: #9b59b6 !important;
+}
+
+.adventure {
+    background-color: #27ae60 !important;
+}
+
+.arcade {
+    background-color: #e74c3c !important;
+}
+
+.strategy {
+    background-color: #3498db !important;
+}
+
+.educational {
+    background-color: #f1c40f !important;
+}
+
+.game-search {
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.game-search input {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 1px solid var(--border);
+    border-radius: 5px 0 0 5px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.game-search input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.game-search button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.game-search button:hover {
+    background-color: #2980b9;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.filter-options button {
+    background-color: var(--light-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.filter-options button:hover {
+    background-color: #e3e8ec;
+}
+
+.filter-options button.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .game-stats {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .filter-options {
+        justify-content: center;
+    }
+    
+    .tool-card.game-card .card-image {
+        height: 140px;
+    }
+}
+
+/* For medium size screens/tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .tool-card.game-card .card-image {
+        height: 160px;
+    }
+    
+    .filter-options {
+        justify-content: center;
+    }
+}
+
+/* Accessibility improvements */
+.card-button:focus, 
+.filter-options button:focus,
+.game-search input:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Dark mode ready - for future implementation */
+@media (prefers-color-scheme: dark) {
+    .tool-card.game-card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    }
+    
+    .game-search input {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+}

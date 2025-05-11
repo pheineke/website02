@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner Hub</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Planner Hub</h1>
+            <p class="subheading">Your personal planning and organization tools</p>
+        </header>
+
+        <div class="tools-grid">
+            <!-- Weekly Planner Card -->
+            <a href="{{ url_for('weekly_planner') }}" class="tool-card card-link">
+                <div class="card-image" style="background-color: #3498db;">
+                    <i class="fas fa-calendar-week"></i>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Weekly Planner</h2>
+                    <p class="card-description">
+                        Organize your week with detailed time blocks for courses, activities, and free time.
+                        View courses, gym sessions, and other activities in a comprehensive schedule.
+                    </p>
+                </div>
+            </a>
+
+            <!-- Daily Focus Card (placeholder for future tool) -->
+            <div class="tool-card card-link coming-soon-card">
+                <div class="card-image" style="background-color: #2ecc71;">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Daily Focus</h2>
+                    <p class="card-description">
+                        Focus on today's most important tasks and activities with a detailed hourly breakdown.
+                        Track your productivity and accomplishments throughout the day.
+                    </p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                </div>
+            </div>
+
+            <!-- Study Tracker Card (placeholder for future tool) -->
+            <div class="tool-card card-link coming-soon-card">
+                <div class="card-image" style="background-color: #f39c12;">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Study Tracker</h2>
+                    <p class="card-description">
+                        Monitor your studying progress for different courses. Set goals, record your study hours, and see your improvement over time.
+                    </p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                </div>
+            </div>
+
+            <!-- Fitness Log Card (placeholder for future tool) -->
+            <div class="tool-card card-link coming-soon-card">
+                <div class="card-image" style="background-color: #e74c3c;">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Fitness Log</h2>
+                    <p class="card-description">
+                        Track your workouts, cycling sessions, and fitness progress. Log exercises, set personal records, and maintain consistency.
+                    </p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mini-tools-section">
+            <h3 class="section-title">Entertainment & Extras</h3>
+            <div class="mini-tools-grid">
+                <!-- Games Hub Mini Card -->
+                <a href="{{ url_for('games') }}" class="mini-tool-card card-link" data-tooltip="Browser games for entertainment and learning breaks.">
+                    <div class="mini-card-image" style="background-color: #9b59b6;">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="mini-card-content">
+                        <h3 class="mini-card-title">Games Hub</h3>
+                    </div>
+                </a>
+                
+                <!-- Placeholder for future mini tools -->
+                <div class="mini-tool-card card-link coming-soon-card" data-tooltip="Curated playlists to boost productivity and focus.">
+                    <div class="mini-card-image" style="background-color: #16a085;">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="mini-card-content">
+                        <h3 class="mini-card-title">Focus Music</h3>
+                        <div class="mini-coming-soon-badge">Soon</div>
+                    </div>
+                </div>
+                
+                <!-- Add another placeholder mini tool -->
+                <div class="mini-tool-card card-link coming-soon-card" data-tooltip="Quick exercises and stretches for study breaks.">
+                    <div class="mini-card-image" style="background-color: #e67e22;">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <div class="mini-card-content">
+                        <h3 class="mini-card-title">Quick Fitness</h3>
+                        <div class="mini-coming-soon-badge">Soon</div>
+                    </div>
+                </div>
+                
+                <!-- Add another placeholder mini tool -->
+                <div class="mini-tool-card card-link coming-soon-card" data-tooltip="Timer with Pomodoro technique for focused work sessions.">
+                    <div class="mini-card-image" style="background-color: #e74c3c;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="mini-card-content">
+                        <h3 class="mini-card-title">Pomodoro Timer</h3>
+                        <div class="mini-coming-soon-badge">Soon</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> Planner Hub. All tools are designed to help optimize your time and productivity.</p>
+        </footer>
+    </div>
+
+    <script>
+        // JavaScript for future interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Planner Hub loaded successfully');
+            
+            // Function to show alert for "coming soon" features
+            const comingSoonCards = document.querySelectorAll('.coming-soon-card');
+            comingSoonCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('This feature is coming soon! Check back later.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

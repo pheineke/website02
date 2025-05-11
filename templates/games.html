@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games Hub</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='games.css') }}">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Games Hub</h1>
+            <p class="subheading">Collection of browser games for entertainment and learning</p>
+        </header>
+
+        <!-- Search and filter section -->
+        <div class="game-search">
+            <input type="text" placeholder="Search games..." id="game-search-input">
+            <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+
+        <div class="filter-options">
+            <button class="active" data-filter="all">All Games</button>
+            <button data-filter="puzzle">Puzzle</button>
+            <button data-filter="arcade">Arcade</button>
+            <button data-filter="strategy">Strategy</button>
+            <button data-filter="educational">Educational</button>
+            <button data-filter="adventure">Adventure</button>
+        </div>
+
+        <div class="tools-grid" id="games-grid">
+            <!-- Tic Tac Toe Card -->
+            <div class="tool-card game-card card-link coming-soon-card" data-category="puzzle">
+                <div class="card-image puzzle">
+                    <i class="fas fa-th"></i>
+                    <div class="badge">Puzzle</div>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Tic Tac Toe</h2>
+                    <p class="card-description">
+                        Classic game of X's and O's. Play against a friend or challenge the computer with multiple difficulty levels.
+                    </p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="game-stats">
+                        <span><i class="fas fa-user"></i> 1-2 Players</span>
+                        <span><i class="fas fa-clock"></i> 2-5 min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Snake Game Card -->
+            <div class="tool-card game-card card-link coming-soon-card" data-category="arcade">
+                <div class="card-image arcade">
+                    <i class="fas fa-snake"></i>
+                    <div class="badge">Arcade</div>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Snake</h2>
+                    <p class="card-description">
+                        Control a growing snake, eat apples and avoid hitting the walls or yourself. How long can you get?
+                    </p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="game-stats">
+                        <span><i class="fas fa-user"></i> 1 Player</span>
+                        <span><i class="fas fa-clock"></i> 5-10 min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Memory Match Card -->
+            <div class="tool-card game-card card-link coming-soon-card" data-category="puzzle">
+                <div class="card-image puzzle">
+                    <i class="fas fa-brain"></i>
+                    <div class="badge">Puzzle</div>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Memory Match</h2>
+                    <p class="card-description">
+                        Test and improve your memory by matching pairs of cards. Multiple themes and difficulty levels available.
+                    </p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="game-stats">
+                        <span><i class="fas fa-user"></i> 1-4 Players</span>
+                        <span><i class="fas fa-clock"></i> 5-15 min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Word Puzzle Card -->
+            <div class="tool-card game-card card-link coming-soon-card" data-category="educational">
+                <div class="card-image educational">
+                    <i class="fas fa-font"></i>
+                    <div class="badge">Educational</div>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Word Puzzle</h2>
+                    <p class="card-description">
+                        Expand your vocabulary with this engaging word puzzle game. Find words, solve anagrams, and complete challenges.
+                    </p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="game-stats">
+                        <span><i class="fas fa-user"></i> 1 Player</span>
+                        <span><i class="fas fa-clock"></i> 10-20 min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chess Card -->
+            <div class="tool-card game-card card-link coming-soon-card" data-category="strategy">
+                <div class="card-image strategy">
+                    <i class="fas fa-chess"></i>
+                    <div class="badge">Strategy</div>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Chess</h2>
+                    <p class="card-description">
+                        Classic chess game with multiplayer support, AI opponents of varying difficulty, and a tutorial for beginners.
+                    </p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="game-stats">
+                        <span><i class="fas fa-user"></i> 1-2 Players</span>
+                        <span><i class="fas fa-clock"></i> 15-60 min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Adventure Game Card -->
+            <div class="tool-card game-card card-link coming-soon-card" data-category="adventure">
+                <div class="card-image adventure">
+                    <i class="fas fa-mountain"></i>
+                    <div class="badge">Adventure</div>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Pixel Adventure</h2>
+                    <p class="card-description">
+                        Embark on a text-based adventure with pixel art graphics. Make choices, solve puzzles, and discover multiple endings.
+                    </p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="game-stats">
+                        <span><i class="fas fa-user"></i> 1 Player</span>
+                        <span><i class="fas fa-clock"></i> 20+ min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> Games Hub | <a href="{{ url_for('index') }}" style="color: var(--primary);">Back to Planner Hub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Games Hub loaded successfully');
+            
+            // Function to show alert for "coming soon" features
+            const comingSoonCards = document.querySelectorAll('.coming-soon-card');
+            comingSoonCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('This game is coming soon! Check back later for updates.');
+                });
+            });
+            
+            // Filter functionality
+            const filterButtons = document.querySelectorAll('.filter-options button');
+            const gameCards = document.querySelectorAll('.game-card');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Filter the games
+                    gameCards.forEach(card => {
+                        if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('game-search-input');
+            
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                gameCards.forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const description = card.querySelector('.card-description').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
