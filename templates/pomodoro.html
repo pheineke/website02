@@ -11,6 +11,8 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- Theme management -->
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
 </head>
 <body>
     <div class="container">
@@ -94,6 +96,9 @@
             <p>&copy; <script>document.write(new Date().getFullYear())</script> Planner Hub | <a href="{{ url_for('index') }}" style="color: var(--primary);">Back to Planner Hub</a></p>
         </footer>
     </div>
+
+    <!-- Quick theme selector -->
+    <div class="theme-quick-select"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

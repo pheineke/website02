@@ -277,6 +277,86 @@ footer {
     box-shadow: 0 0 0 2px var(--primary), 0 0 0 4px rgba(52, 152, 219, 0.3);
 }
 
+/* Theme Quick Selector */
+.theme-quick-select {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.quick-theme-selector {
+    display: flex;
+    gap: 8px;
+    background-color: var(--card-bg);
+    padding: 10px;
+    border-radius: 30px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.theme-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s ease;
+    padding: 0;
+    border: 2px solid transparent;
+}
+
+.theme-option:hover {
+    transform: scale(1.2);
+}
+
+.theme-option.active {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary);
+}
+
+.accent-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.settings-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: var(--primary);
+    color: white;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.settings-link:hover {
+    transform: rotate(45deg);
+}
+
+/* Custom theme indicator in the quick selector */
+.custom-theme-option {
+    position: relative;
+    overflow: visible !important;
+}
+
+.custom-indicator {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    color: gold;
+    text-shadow: 0 0 1px rgba(0,0,0,0.5);
+    pointer-events: none;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
     h1 {
