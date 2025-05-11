@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Planner Hub</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Settings</h1>
+            <p class="subheading">Customize your planner experience</p>
+        </header>
+
+        <div class="settings-container">
+            <!-- Theme Selection -->
+            <div class="section-header">
+                <h2>Choose a Theme</h2>
+                <button id="restore-default">Restore Default</button>
+            </div>
+            
+            <div class="themes-grid">
+                <!-- Default Theme -->
+                <div class="theme-card active" data-theme="default">
+                    <div class="theme-colors">
+                        <div style="background-color: #3498db;"></div>
+                        <div style="background-color: #2ecc71;"></div>
+                        <div style="background-color: #9b59b6;"></div>
+                        <div style="background-color: #ecf0f1;"></div>
+                        <div style="background-color: #2c3e50;"></div>
+                    </div>
+                    <div class="theme-name">Default</div>
+                </div>
+                
+                <!-- Dark Theme -->
+                <div class="theme-card" data-theme="dark">
+                    <div class="theme-colors">
+                        <div style="background-color: #3498db;"></div>
+                        <div style="background-color: #2ecc71;"></div>
+                        <div style="background-color: #9b59b6;"></div>
+                        <div style="background-color: #2c3e50;"></div>
+                        <div style="background-color: #ecf0f1;"></div>
+                    </div>
+                    <div class="theme-name">Dark Mode</div>
+                </div>
+                
+                <!-- Solarized Theme -->
+                <div class="theme-card" data-theme="solarized">
+                    <div class="theme-colors">
+                        <div style="background-color: #268bd2;"></div>
+                        <div style="background-color: #859900;"></div>
+                        <div style="background-color: #d33682;"></div>
+                        <div style="background-color: #fdf6e3;"></div>
+                        <div style="background-color: #073642;"></div>
+                    </div>
+                    <div class="theme-name">Solarized</div>
+                </div>
+                
+                <!-- Nord Theme -->
+                <div class="theme-card" data-theme="nord">
+                    <div class="theme-colors">
+                        <div style="background-color: #5e81ac;"></div>
+                        <div style="background-color: #a3be8c;"></div>
+                        <div style="background-color: #b48ead;"></div>
+                        <div style="background-color: #eceff4;"></div>
+                        <div style="background-color: #2e3440;"></div>
+                    </div>
+                    <div class="theme-name">Nord</div>
+                </div>
+                
+                <!-- Material Theme -->
+                <div class="theme-card" data-theme="material">
+                    <div class="theme-colors">
+                        <div style="background-color: #2196f3;"></div>
+                        <div style="background-color: #4caf50;"></div>
+                        <div style="background-color: #9c27b0;"></div>
+                        <div style="background-color: #eeeeee;"></div>
+                        <div style="background-color: #212121;"></div>
+                    </div>
+                    <div class="theme-name">Material</div>
+                </div>
+                
+                <!-- Pastel Theme -->
+                <div class="theme-card" data-theme="pastel">
+                    <div class="theme-colors">
+                        <div style="background-color: #79a8ff;"></div>
+                        <div style="background-color: #91db69;"></div>
+                        <div style="background-color: #e0a2ff;"></div>
+                        <div style="background-color: #f0f0f0;"></div>
+                        <div style="background-color: #666666;"></div>
+                    </div>
+                    <div class="theme-name">Pastel</div>
+                </div>
+            </div>
+            
+            <!-- Custom Theme Creator -->
+            <div class="custom-theme">
+                <div class="section-header">
+                    <h2>Create Custom Theme</h2>
+                    <button class="theme-toggle"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                
+                <div class="collapsible-content">
+                    <div class="color-inputs">
+                        <div class="color-input-group">
+                            <label for="primary-color">Primary Color</label>
+                            <div class="color-picker">
+                                <input type="color" id="primary-color" value="#3498db">
+                                <input type="text" id="primary-hex" value="#3498db">
+                            </div>
+                        </div>
+                        
+                        <div class="color-input-group">
+                            <label for="secondary-color">Secondary Color</label>
+                            <div class="color-picker">
+                                <input type="color" id="secondary-color" value="#2ecc71">
+                                <input type="text" id="secondary-hex" value="#2ecc71">
+                            </div>
+                        </div>
+                        
+                        <div class="color-input-group">
+                            <label for="accent-color">Accent Color</label>
+                            <div class="color-picker">
+                                <input type="color" id="accent-color" value="#9b59b6">
+                                <input type="text" id="accent-hex" value="#9b59b6">
+                            </div>
+                        </div>
+                        
+                        <div class="color-input-group">
+                            <label for="bg-color">Background Color</label>
+                            <div class="color-picker">
+                                <input type="color" id="bg-color" value="#ecf0f1">
+                                <input type="text" id="bg-hex" value="#ecf0f1">
+                            </div>
+                        </div>
+                        
+                        <div class="color-input-group">
+                            <label for="text-color">Text Color</label>
+                            <div class="color-picker">
+                                <input type="color" id="text-color" value="#2c3e50">
+                                <input type="text" id="text-hex" value="#2c3e50">
+                            </div>
+                        </div>
+                        
+                        <div class="color-input-group">
+                            <label for="card-bg-color">Card Background</label>
+                            <div class="color-picker">
+                                <input type="color" id="card-bg-color" value="#ffffff">
+                                <input type="text" id="card-bg-hex" value="#ffffff">
+                            </div>
+                        </div>
+                        
+                        <div class="color-input-group">
+                            <label for="border-color">Border Color</label>
+                            <div class="color-picker">
+                                <input type="color" id="border-color" value="#bdc3c7">
+                                <input type="text" id="border-hex" value="#bdc3c7">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="theme-preview">
+                        <div class="preview-header">Theme Preview</div>
+                        <div class="preview-elements">
+                            <div class="preview-element">
+                                <button class="preview-button">Primary Button</button>
+                            </div>
+                            <div class="preview-element">
+                                <div class="preview-secondary">Secondary</div>
+                            </div>
+                            <div class="preview-element">
+                                <div class="preview-card">
+                                    <div>Card Element</div>
+                                    <div class="preview-accent">Accent</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="theme-actions">
+                        <button class="reset-theme">Reset</button>
+                        <button class="save-theme">Save Custom Theme</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Export/Import Settings -->
+            <div class="import-export">
+                <div class="section-header">
+                    <h2>Import/Export Settings</h2>
+                </div>
+                
+                <p>Export your theme settings to share with others or save as backup. You can also import settings from a file.</p>
+                
+                <div class="import-export-actions">
+                    <button id="export-btn">
+                        <i class="fas fa-download"></i> Export Settings
+                    </button>
+                    
+                    <button id="import-btn">
+                        <i class="fas fa-upload"></i> Import Settings
+                    </button>
+                    <input type="file" id="import-file" accept=".json">
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> Planner Hub | <a href="{{ url_for('index') }}" style="color: var(--primary);">Back to Planner Hub</a></p>
+        </footer>
+        
+        <!-- Feedback Message -->
+        <div class="feedback-message" id="feedback-message"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme data
+            const themes = {
+                default: {
+                    primary: '#3498db',
+                    secondary: '#2ecc71',
+                    accent: '#9b59b6',
+                    lightBg: '#ecf0f1',
+                    cardBg: '#ffffff',
+                    text: '#2c3e50',
+                    border: '#bdc3c7',
+                    shadow: 'rgba(0, 0, 0, 0.1)'
+                },
+                dark: {
+                    primary: '#3498db',
+                    secondary: '#2ecc71',
+                    accent: '#9b59b6',
+                    lightBg: '#2c3e50',
+                    cardBg: '#34495e',
+                    text: '#ecf0f1',
+                    border: '#7f8c8d',
+                    shadow: 'rgba(0, 0, 0, 0.3)'
+                },
+                solarized: {
+                    primary: '#268bd2',
+                    secondary: '#859900',
+                    accent: '#d33682',
+                    lightBg: '#fdf6e3',
+                    cardBg: '#eee8d5',
+                    text: '#073642',
+                    border: '#93a1a1',
+                    shadow: 'rgba(0, 0, 0, 0.1)'
+                },
+                nord: {
+                    primary: '#5e81ac',
+                    secondary: '#a3be8c',
+                    accent: '#b48ead',
+                    lightBg: '#eceff4',
+                    cardBg: '#e5e9f0',
+                    text: '#2e3440',
+                    border: '#d8dee9',
+                    shadow: 'rgba(0, 0, 0, 0.1)'
+                },
+                material: {
+                    primary: '#2196f3',
+                    secondary: '#4caf50',
+                    accent: '#9c27b0',
+                    lightBg: '#eeeeee',
+                    cardBg: '#ffffff',
+                    text: '#212121',
+                    border: '#bdbdbd',
+                    shadow: 'rgba(0, 0, 0, 0.14)'
+                },
+                pastel: {
+                    primary: '#79a8ff',
+                    secondary: '#91db69',
+                    accent: '#e0a2ff',
+                    lightBg: '#f0f0f0',
+                    cardBg: '#ffffff',
+                    text: '#666666',
+                    border: '#dddddd',
+                    shadow: 'rgba(0, 0, 0, 0.05)'
+                }
+            };
+            
+            // DOM Elements
+            const themeCards = document.querySelectorAll('.theme-card');
+            const restoreDefaultBtn = document.getElementById('restore-default');
+            const saveThemeBtn = document.querySelector('.save-theme');
+            const resetThemeBtn = document.querySelector('.reset-theme');
+            const exportBtn = document.getElementById('export-btn');
+            const importBtn = document.getElementById('import-btn');
+            const importFile = document.getElementById('import-file');
+            const feedbackMessage = document.getElementById('feedback-message');
+            
+            // Color picker elements
+            const primaryColorPicker = document.getElementById('primary-color');
+            const secondaryColorPicker = document.getElementById('secondary-color');
+            const accentColorPicker = document.getElementById('accent-color');
+            const bgColorPicker = document.getElementById('bg-color');
+            const textColorPicker = document.getElementById('text-color');
+            const cardBgColorPicker = document.getElementById('card-bg-color');
+            const borderColorPicker = document.getElementById('border-color');
+            
+            // Hex input elements
+            const primaryHexInput = document.getElementById('primary-hex');
+            const secondaryHexInput = document.getElementById('secondary-hex');
+                const accentHexInput = document.getElementById('accent-hex');
+            const bgHexInput = document.getElementById('bg-hex');
+            const textHexInput = document.getElementById('text-hex');
+            const cardBgHexInput = document.getElementById('card-bg-hex');
+            const borderHexInput = document.getElementById('border-hex');
+            
+            // Initialize from local storage or set default
+            let currentTheme = localStorage.getItem('plannerTheme') || 'default';
+            updateThemeCardSelection(currentTheme);
+            applyTheme(currentTheme === 'custom' ? 
+                       JSON.parse(localStorage.getItem('customTheme')) : 
+                       themes[currentTheme]);
+            
+            // Update custom theme inputs from current theme
+            updateCustomThemeInputs(currentTheme === 'custom' ? 
+                                  JSON.parse(localStorage.getItem('customTheme')) : 
+                                  themes[currentTheme]);
+            
+            // Theme card selection
+            themeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const themeName = this.getAttribute('data-theme');
+                    
+                    // Update selection visuals
+                    updateThemeCardSelection(themeName);
+                    
+                    // Apply selected theme
+                    applyTheme(themes[themeName]);
+                    updateCustomThemeInputs(themes[themeName]);
+                    
+                    // Save selection to local storage
+                    localStorage.setItem('plannerTheme', themeName);
+                    
+                    // Show feedback
+                    showFeedback(`${themeName.charAt(0).toUpperCase() + themeName.slice(1)} theme applied`);
+                });
+            });
+            
+            // Restore default theme
+            restoreDefaultBtn.addEventListener('click', function() {
+                updateThemeCardSelection('default');
+                applyTheme(themes.default);
+                updateCustomThemeInputs(themes.default);
+                localStorage.setItem('plannerTheme', 'default');
+                showFeedback('Default theme restored');
+            });
+            
+            // Save custom theme
+            saveThemeBtn.addEventListener('click', function() {
+                const customTheme = {
+                    primary: primaryColorPicker.value,
+                    secondary: secondaryColorPicker.value,
+                    accent: accentColorPicker.value,
+                    lightBg: bgColorPicker.value,
+                    cardBg: cardBgColorPicker.value,
+                    text: textColorPicker.value,
+                    border: borderColorPicker.value,
+                    shadow: 'rgba(0, 0, 0, 0.1)'  // Shadow is derived
+                };
+                
+                // Save to local storage
+                localStorage.setItem('customTheme', JSON.stringify(customTheme));
+                localStorage.setItem('plannerTheme', 'custom');
+                
+                // Update UI to show custom theme is active
+                updateThemeCardSelection('custom');
+                
+                // Apply the custom theme
+                applyTheme(customTheme);
+                
+                // Show feedback
+                showFeedback('Custom theme saved and applied');
+            });
+            
+            // Reset custom theme inputs
+            resetThemeBtn.addEventListener('click', function() {
+                // Reset to current theme or default
+                const resetTheme = currentTheme !== 'custom' ? themes[currentTheme] : themes.default;
+                updateCustomThemeInputs(resetTheme);
+                showFeedback('Custom theme inputs reset');
+            });
+            
+            // Connect color pickers to hex inputs
+            connectColorPickerToHexInput(primaryColorPicker, primaryHexInput);
+            connectColorPickerToHexInput(secondaryColorPicker, secondaryHexInput);
+            connectColorPickerToHexInput(accentColorPicker, accentHexInput);
+            connectColorPickerToHexInput(bgColorPicker, bgHexInput);
+            connectColorPickerToHexInput(textColorPicker, textHexInput);
+            connectColorPickerToHexInput(cardBgColorPicker, cardBgHexInput);
+            connectColorPickerToHexInput(borderColorPicker, borderHexInput);
+            
+            // Live preview of custom theme
+            const colorInputs = document.querySelectorAll('input[type="color"], input[type="text"]');
+            colorInputs.forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+            
+            // Export theme settings
+            exportBtn.addEventListener('click', function() {
+                const settings = {
+                    plannerTheme: localStorage.getItem('plannerTheme') || 'default',
+                    customTheme: localStorage.getItem('customTheme') ? 
+                                JSON.parse(localStorage.getItem('customTheme')) : 
+                                themes.default
+                };
+                
+                const blob = new Blob([JSON.stringify(settings, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'planner-theme-settings.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showFeedback('Settings exported successfully');
+            });
+            
+            // Import theme settings
+            importBtn.addEventListener('click', function() {
+                importFile.click();
+            });
+            
+            importFile.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const settings = JSON.parse(e.target.result);
+                        
+                        // Validate the settings
+                        if (!settings.plannerTheme) throw new Error('Invalid settings file');
+                        
+                        // Apply the imported settings
+                        localStorage.setItem('plannerTheme', settings.plannerTheme);
+                        
+                        if (settings.plannerTheme === 'custom' && settings.customTheme) {
+                            localStorage.setItem('customTheme', JSON.stringify(settings.customTheme));
+                            applyTheme(settings.customTheme);
+                            updateCustomThemeInputs(settings.customTheme);
+                        } else {
+                            applyTheme(themes[settings.plannerTheme] || themes.default);
+                            updateCustomThemeInputs(themes[settings.plannerTheme] || themes.default);
+                        }
+                        
+                        updateThemeCardSelection(settings.plannerTheme);
+                        showFeedback('Settings imported successfully');
+                    } catch (err) {
+                        showFeedback('Error importing settings: Invalid file format', true);
+                    }
+                };
+                reader.readAsText(file);
+                this.value = ''; // Reset the input
+            });
+            
+            // Function to update theme card selection UI
+            function updateThemeCardSelection(themeName) {
+                currentTheme = themeName;
+                themeCards.forEach(card => {
+                    if (card.getAttribute('data-theme') === themeName) {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+                
+                // Special handling for custom theme
+                if (themeName === 'custom') {
+                    themeCards.forEach(card => card.classList.remove('active'));
+                }
+            }
+            
+            // Function to apply theme
+            function applyTheme(theme) {
+                document.documentElement.style.setProperty('--primary', theme.primary);
+                document.documentElement.style.setProperty('--secondary', theme.secondary);
+                document.documentElement.style.setProperty('--accent', theme.accent);
+                document.documentElement.style.setProperty('--light-bg', theme.lightBg);
+                document.documentElement.style.setProperty('--card-bg', theme.cardBg);
+                document.documentElement.style.setProperty('--text', theme.text);
+                document.documentElement.style.setProperty('--border', theme.border);
+                document.documentElement.style.setProperty('--shadow', theme.shadow);
+                
+                // Update preview
+                updatePreview();
+            }
+            
+            // Function to update custom theme inputs
+            function updateCustomThemeInputs(theme) {
+                primaryColorPicker.value = theme.primary;
+                primaryHexInput.value = theme.primary;
+                
+                secondaryColorPicker.value = theme.secondary;
+                secondaryHexInput.value = theme.secondary;
+                
+                accentColorPicker.value = theme.accent;
+                accentHexInput.value = theme.accent;
+                
+                bgColorPicker.value = theme.lightBg;
+                bgHexInput.value = theme.lightBg;
+                
+                textColorPicker.value = theme.text;
+                textHexInput.value = theme.text;
+                
+                cardBgColorPicker.value = theme.cardBg;
+                cardBgHexInput.value = theme.cardBg;
+                
+                borderColorPicker.value = theme.border;
+                borderHexInput.value = theme.border;
+            }
+            
+            // Connect color picker to hex input
+            function connectColorPickerToHexInput(colorPicker, hexInput) {
+                colorPicker.addEventListener('input', function() {
+                    hexInput.value = this.value;
+                });
+                
+                hexInput.addEventListener('input', function() {
+                    // Validate hex color format
+                    if (/^#([0-9A-F]{3}){1,2}$/i.test(this.value)) {
+                        colorPicker.value = this.value;
+                    }
+                });
+                
+                hexInput.addEventListener('blur', function() {
+                    // Ensure valid hex on blur
+                    if (!/^#([0-9A-F]{3}){1,2}$/i.test(this.value)) {
+                        this.value = colorPicker.value;
+                    }
+                });
+            }
+            
+            // Update live preview
+            function updatePreview() {
+                const previewButton = document.querySelector('.preview-button');
+                const previewSecondary = document.querySelector('.preview-secondary');
+                const previewCard = document.querySelector('.preview-card');
+                const previewAccent = document.querySelector('.preview-accent');
+                
+                previewButton.style.backgroundColor = primaryColorPicker.value;
+                previewSecondary.style.backgroundColor = secondaryColorPicker.value;
+                previewAccent.style.backgroundColor = accentColorPicker.value;
+                previewCard.style.backgroundColor = cardBgColorPicker.value;
+                previewCard.style.color = textColorPicker.value;
+                document.querySelector('.theme-preview').style.backgroundColor = bgColorPicker.value;
+            }
+            
+            // Show feedback message
+            function showFeedback(message, isError = false) {
+                feedbackMessage.textContent = message;
+                feedbackMessage.style.backgroundColor = isError ? '#e74c3c' : 'var(--secondary)';
+                feedbackMessage.classList.add('show');
+                
+                setTimeout(() => {
+                    feedbackMessage.classList.remove('show');
+                }, 3000);
+            }
+            // Toggle collapsible content
+            const themeToggleButton = document.querySelector('.theme-toggle');
+            const collapsibleContent = document.querySelector('.collapsible-content');
+            themeToggleButton.addEventListener('click', function() {
+                collapsibleContent.classList.toggle('expanded');
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+        });
+    </script>
+</body>
+</html>

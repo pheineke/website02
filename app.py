@@ -18,6 +18,10 @@ def pomodoro():
 def games():
     return render_template('games.html')
 
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
+
 @app.route('/health')
 def health():
     return jsonify({"status": "healthy"})
