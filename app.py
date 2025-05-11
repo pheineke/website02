@@ -10,6 +10,10 @@ def index():
 def weekly_planner():
     return render_template('weekly_planner.html')
 
+@app.route('/pomodoro')
+def pomodoro():
+    return render_template('pomodoro.html')
+
 @app.route('/games')
 def games():
     return render_template('games.html')
