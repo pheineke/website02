@@ -4,126 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productivity Hub</title>
-    
-    <!-- Font Awesome for icons, consistent with the planner -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-
     <style>
         :root {
-            /* Using the exact same style variables as the planner */
             --primary: #34495e;
             --light-bg: #f4f6f7;
+            --widget-bg: #ffffff;
             --border: #daddde;
             --text: #2c3e50;
+            --text-muted: #7f8c8d;
             --link-hover: #3498db;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        html.dark-mode {
+            --primary: #95a5a6;
+            --light-bg: #2c3e50;
+            --widget-bg: #34495e;
+            --border: #4a627a;
+            --text: #ecf0f1;
+            --text-muted: #95a5a6;
+            --link-hover: #5dade2;
         }
-
-        body {
-            color: var(--text);
-            background-color: var(--light-bg);
-            font-size: 14px;
-            line-height: 1.6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            text-align: center;
-        }
-
-        h1 {
-            margin-bottom: 40px;
-            color: var(--primary);
-            font-weight: 300;
-            font-size: 42px;
-        }
-
-        /* --- Hub Navigation Grid --- */
-        .hub-nav {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap; /* Allows cards to stack on smaller screens */
-        }
-
-        /* --- Individual App Card Styling --- */
-        .hub-card {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.1);
-            padding: 30px;
-            width: 300px;
-            text-decoration: none;
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            -webkit-tap-highlight-color: transparent; /* Removes mobile tap highlight */
-        }
-
-        .hub-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 25px rgba(44, 62, 80, 0.15);
-        }
-
-        .hub-card .icon {
-            font-size: 48px;
-            color: var(--primary);
-            margin-bottom: 20px;
-            transition: color 0.2s ease;
-        }
-
-        .hub-card:hover .icon {
-            color: var(--link-hover);
-        }
-
-        .hub-card h2 {
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-
-        .hub-card p {
-            font-size: 15px;
-            color: #7f8c8d;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { color: var(--text); background-color: var(--light-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background-color 0.3s ease, color 0.3s ease; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+        h1 { margin-bottom: 40px; color: var(--primary); font-weight: 300; font-size: 42px; }
+        .hub-nav { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        .hub-card { background-color: var(--widget-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0, 0.05); padding: 30px; width: 300px; text-decoration: none; color: var(--text); display: flex; flex-direction: column; align-items: center; transition: transform 0.2s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color: transparent; }
+        .hub-card:hover { transform: translateY(-8px); box-shadow: 0 8px 25px rgba(0,0,0, 0.1); }
+        .hub-card .icon { font-size: 48px; color: var(--primary); margin-bottom: 20px; transition: color 0.2s ease; }
+        .hub-card:hover .icon { color: var(--link-hover); }
+        .hub-card h2 { font-size: 22px; margin-bottom: 10px; }
+        .hub-card p { font-size: 15px; color: var(--text-muted); }
+        .theme-toggle-btn { position: fixed; bottom: 20px; right: 20px; background-color: var(--widget-bg); color: var(--text-muted); border: 1px solid var(--border); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1200; -webkit-tap-highlight-color: transparent; }
+        .theme-toggle-btn .fa-sun { display: none; } html.dark-mode .theme-toggle-btn .fa-sun { display: block; } html.dark-mode .theme-toggle-btn .fa-moon { display: none; }
     </style>
+    <script>
+        // IIFE to set theme instantly, preventing FOUC
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="container">
         <h1>Productivity Hub</h1>
-
         <div class="hub-nav">
-            <!-- Link to the Weekly Planner -->
-            <a href="{{ url_for('weekly_planner') }}" class="hub-card">
-                <div class="icon">
-                    <i class="fas fa-calendar-week"></i>
-                </div>
+            <a href="/weekly_planner" class="hub-card">
+                <div class="icon"><i class="fas fa-calendar-week"></i></div>
                 <h2>Weekly Planner</h2>
                 <p>Visualize your week, manage tasks, and stay organized.</p>
             </a>
-
-            <!-- Link to the Pomodoro Timer -->
-            <a href="{{ url_for('pomodoro') }}" class="hub-card">
-                <div class="icon">
-                    <i class="fas fa-stopwatch-20"></i>
-                </div>
+            <a href="/pomodoro" class="hub-card">
+                <div class="icon"><i class="fas fa-stopwatch-20"></i></div>
                 <h2>Pomodoro Timer</h2>
-                <p>Boost your focus with the Pomodoro Technique. Work in timed intervals.</p>
+                <p>Boost your focus with the Pomodoro Technique.</p>
             </a>
         </div>
     </div>
+    <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+    </button>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            themeToggleBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark-mode');
+                const isDarkMode = document.documentElement.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            });
+        });
+    </script>
 </body>
 </html>
