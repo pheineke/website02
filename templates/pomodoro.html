@@ -1,475 +1,294 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pomodoro Timer</title>
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='pomodoro.css') }}">
+    <!-- Font Awesome for icons, consistent with the planner -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Theme management -->
-    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <style>
+        :root {
+            /* Using the exact same style variables as the planner */
+            --primary: #34495e;
+            --light-bg: #f4f6f7;
+            --border: #daddde;
+            --text: #2c3e50;
+            --work-accent: #e74c3c;
+            --break-accent: #2ecc71;
+            --break-bg: #f0f9f4; /* A very light green for break mode */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            color: var(--text);
+            background-color: var(--light-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.5s ease;
+        }
+
+        body.break-active {
+            background-color: var(--break-bg);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+            text-align: center;
+            width: 100%;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-weight: 300;
+            font-size: 42px;
+        }
+
+        /* --- Pomodoro Widget Styling --- */
+        .pomodoro-widget {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(44, 62, 80, 0.1);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 10px;
+            background-color: var(--light-bg);
+            padding: 5px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mode-btn.active {
+            background-color: #fff;
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+
+        #timer-display {
+            font-size: 96px;
+            font-weight: 200;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .control-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .control-btn:hover {
+            background-color: #2c3e50;
+        }
+
+        #reset-btn {
+            background: none;
+            color: #95a5a6;
+            font-size: 24px;
+            padding: 10px;
+        }
+        #reset-btn:hover {
+            color: var(--text);
+        }
+
+        .back-to-hub {
+            margin-top: 40px;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-hub:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .back-to-hub i {
+            margin-right: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Pomodoro Timer</h1>
-            <p class="subheading">Stay focused and productive with timed work sessions</p>
-        </header>
-        
-        <div class="pomodoro-container">
+        <h1>Pomodoro Timer</h1>
+
+        <div class="pomodoro-widget">
             <div class="mode-buttons">
-                <button class="mode-button pomodoro-btn active" data-mode="pomodoro">Pomodoro</button>
-                <button class="mode-button short-break-btn" data-mode="shortBreak">Short Break</button>
-                <button class="mode-button long-break-btn" data-mode="longBreak">Long Break</button>
+                <button class="mode-btn active" data-mode="work">Pomodoro</button>
+                <button class="mode-btn" data-mode="shortBreak">Short Break</button>
+                <button class="mode-btn" data-mode="longBreak">Long Break</button>
             </div>
-            
-            <div class="timer-display">
-                <div class="timer-circle">
-                    <div class="timer-background"></div>
-                    <div class="timer-progress"></div>
-                    <div class="timer-face"></div>
-                </div>
-                <div class="timer-text">25:00</div>
-            </div>
-            
-            <div class="control-buttons">
-                <button class="control-button reset"><i class="fas fa-redo"></i></button>
-                <button class="control-button start"><i class="fas fa-play"></i></button>
-                <button class="control-button skip"><i class="fas fa-forward"></i></button>
-            </div>
-            
-            <div class="sessions-container">
-                <div class="sessions-count">Session 1/4</div>
-                <div class="session-dots">
-                    <div class="session-dot"></div>
-                    <div class="session-dot"></div>
-                    <div class="session-dot"></div>
-                    <div class="session-dot"></div>
-                </div>
-            </div>
-            
-            <div class="task-list-section">
-                <h3 class="settings-title">Tasks</h3>
-                <div class="task-input-container">
-                    <input type="text" class="task-input" placeholder="What are you working on?">
-                    <button class="add-task-btn"><i class="fas fa-plus"></i></button>
-                </div>
-                
-                <div class="tasks-container">
-                    <!-- Tasks will be added here -->
-                </div>
-            </div>
-            
-            <div class="notifications">
-                <input type="checkbox" id="notification-toggle" class="notification-toggle">
-                <label for="notification-toggle">Enable notifications</label>
-            </div>
-            
-            <div class="settings-section">
-                <h3 class="settings-title">Timer Settings 
-                    <button class="settings-toggle"><i class="fas fa-cog"></i></button>
-                </h3>
-                <div class="settings-grid">
-                    <div class="setting-item">
-                        <div class="setting-label">Pomodoro</div>
-                        <input type="number" class="setting-input" id="pomodoro-time" min="1" max="60" value="25">
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-label">Short Break</div>
-                        <input type="number" class="setting-input" id="short-break-time" min="1" max="30" value="5">
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-label">Long Break</div>
-                        <input type="number" class="setting-input" id="long-break-time" min="1" max="60" value="15">
-                    </div>
-                </div>
-                <button class="save-settings">Save Settings</button>
+
+            <div id="timer-display">25:00</div>
+
+            <div class="controls">
+                <button class="control-btn" id="start-pause-btn">
+                    <i class="fas fa-play"></i>
+                    <span>Start</span>
+                </button>
+                <button class="control-btn" id="reset-btn" aria-label="Reset Timer">
+                    <i class="fas fa-redo"></i>
+                </button>
             </div>
         </div>
-        
-        <footer>
-            <p>&copy; <script>document.write(new Date().getFullYear())</script> Planner Hub | <a href="{{ url_for('index') }}" style="color: var(--primary);">Back to Planner Hub</a></p>
-        </footer>
+
+        <a href="/" class="back-to-hub">
+            <i class="fas fa-arrow-left"></i>
+            Back to Hub
+        </a>
     </div>
 
-    <!-- Quick theme selector -->
-    <div class="theme-quick-select"></div>
+    <!-- Hidden audio element for the alarm -->
+    <audio id="alarm-sound" src="https://cdn.freesound.org/previews/215/215783_3242779-lq.mp3" preload="auto"></audio>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Timer variables
-            let timerMode = 'pomodoro';
-            let timeLeft = 25 * 60; // 25 minutes in seconds
-            let originalTime = timeLeft;
-            let isRunning = false;
-            let timerInterval;
-            let currentSession = 1;
-            let maxSessions = 4;
-            let tasks = [];
-            
-            // DOM Elements
-            const timerDisplay = document.querySelector('.timer-text');
-            const timerProgress = document.querySelector('.timer-progress');
-            const startBtn = document.querySelector('.control-button.start');
-            const resetBtn = document.querySelector('.control-button.reset');
-            const skipBtn = document.querySelector('.control-button.skip');
-            const modeButtons = document.querySelectorAll('.mode-button');
-            const sessionDots = document.querySelectorAll('.session-dot');
-            const sessionsCountDisplay = document.querySelector('.sessions-count');
-            const notificationToggle = document.getElementById('notification-toggle');
-            const taskInput = document.querySelector('.task-input');
-            const addTaskBtn = document.querySelector('.add-task-btn');
-            const tasksContainer = document.querySelector('.tasks-container');
-            const settingsToggle = document.querySelector('.settings-toggle');
-            const settingsSection = document.querySelector('.settings-section');
-            const saveSettingsBtn = document.querySelector('.save-settings');
-            
-            // Settings
-            let settings = {
-                pomodoro: 25,
-                shortBreak: 5,
-                longBreak: 15
+        document.addEventListener('DOMContentLoaded', () => {
+            const timerDisplay = document.getElementById('timer-display');
+            const startPauseBtn = document.getElementById('start-pause-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const alarmSound = document.getElementById('alarm-sound');
+            const body = document.body;
+
+            const pomodoroDurations = {
+                work: 25 * 60,       // 25 minutes
+                shortBreak: 5 * 60,  // 5 minutes
+                longBreak: 15 * 60,  // 15 minutes
             };
-            
-            // Load settings from local storage
-            if (localStorage.getItem('pomodoroSettings')) {
-                settings = JSON.parse(localStorage.getItem('pomodoroSettings'));
-                document.getElementById('pomodoro-time').value = settings.pomodoro;
-                document.getElementById('short-break-time').value = settings.shortBreak;
-                document.getElementById('long-break-time').value = settings.longBreak;
-                
-                if (timerMode === 'pomodoro') {
-                    timeLeft = settings.pomodoro * 60;
-                    originalTime = timeLeft;
-                }
-            }
-            
-            // Load tasks from local storage
-            if (localStorage.getItem('pomodoroTasks')) {
-                tasks = JSON.parse(localStorage.getItem('pomodoroTasks'));
-                renderTasks();
-            }
-            
-            // Update timer display
+
+            let timerId = null;
+            let isRunning = false;
+            let currentMode = 'work';
+            let timeRemaining = pomodoroDurations.work;
+
             function updateDisplay() {
-                const minutes = Math.floor(timeLeft / 60);
-                let seconds = timeLeft % 60;
-                seconds = seconds < 10 ? '0' + seconds : seconds;
-                timerDisplay.textContent = `${minutes}:${seconds}`;
+                const minutes = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+                const seconds = (timeRemaining % 60).toString().padStart(2, '0');
+                const timeString = `${minutes}:${seconds}`;
                 
-                // Update progress circle
-                const progressPercent = ((originalTime - timeLeft) / originalTime) * 100;
-                timerProgress.style.background = `conic-gradient(
-                    ${getTimerColor()} ${progressPercent}%, 
-                    transparent ${progressPercent}%
-                )`;
+                timerDisplay.textContent = timeString;
+                document.title = `${timeString} - ${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)}`;
             }
-            
-            // Get timer color based on mode
-            function getTimerColor() {
-                switch(timerMode) {
-                    case 'pomodoro':
-                        return 'var(--pomodoro)';
-                    case 'shortBreak':
-                        return 'var(--short-break)';
-                    case 'longBreak':
-                        return 'var(--long-break)';
-                    default:
-                        return 'var(--pomodoro)';
-                }
-            }
-            
-            // Start/Pause timer
-            function toggleTimer() {
-                if (isRunning) {
-                    clearInterval(timerInterval);
-                    startBtn.innerHTML = '<i class="fas fa-play"></i>';
-                } else {
-                    timerInterval = setInterval(function() {
-                        if (timeLeft > 0) {
-                            timeLeft--;
-                            updateDisplay();
-                        } else {
-                            timeComplete();
-                        }
-                    }, 1000);
-                    startBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                }
-                isRunning = !isRunning;
-            }
-            
-            // Reset timer
-            function resetTimer() {
-                clearInterval(timerInterval);
-                isRunning = false;
-                startBtn.innerHTML = '<i class="fas fa-play"></i>';
-                
-                // Reset time based on current mode
-                switch(timerMode) {
-                    case 'pomodoro':
-                        timeLeft = settings.pomodoro * 60;
-                        break;
-                    case 'shortBreak':
-                        timeLeft = settings.shortBreak * 60;
-                        break;
-                    case 'longBreak':
-                        timeLeft = settings.longBreak * 60;
-                        break;
-                }
-                
-                originalTime = timeLeft;
-                updateDisplay();
-            }
-            
-            // Skip to next timer
-            function skipTimer() {
-                if (timerMode === 'pomodoro') {
-                    if (currentSession === maxSessions) {
-                        switchMode('longBreak');
-                    } else {
-                        switchMode('shortBreak');
-                    }
-                } else {
-                    // If in break, go back to pomodoro and possibly update session
-                    if (timerMode === 'shortBreak') {
-                        currentSession++;
-                        updateSessionDisplay();
-                    }
-                    switchMode('pomodoro');
-                }
-            }
-            
-            // Time complete action
-            function timeComplete() {
-                clearInterval(timerInterval);
-                isRunning = false;
-                startBtn.innerHTML = '<i class="fas fa-play"></i>';
-                
-                // Play notification sound
-                const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-                audio.play();
-                
-                // Send notification if enabled
-                if (notificationToggle.checked && 'Notification' in window) {
-                    if (Notification.permission === 'granted') {
-                        let notificationMessage;
-                        
-                        if (timerMode === 'pomodoro') {
-                            notificationMessage = "Time for a break!";
-                        } else {
-                            notificationMessage = "Time to focus!";
-                        }
-                        
-                        new Notification('Pomodoro Timer', {
-                            body: notificationMessage,
-                            icon: 'https://example.com/icon.png' // You can add your own icon
-                        });
-                    }
-                }
-                
-                // Handle session progress
-                if (timerMode === 'pomodoro') {
-                    // Mark current session as completed
-                    if (currentSession <= maxSessions) {
-                        sessionDots[currentSession - 1].classList.add('completed');
-                    }
-                    
-                    // Check if we should go to long break
-                    if (currentSession === maxSessions) {
-                        switchMode('longBreak');
-                    } else {
-                        switchMode('shortBreak');
-                    }
-                } else {
-                    // If break is complete, go back to Pomodoro
-                    if (timerMode === 'shortBreak') {
-                        // Increment session after short break
-                        currentSession++;
-                        updateSessionDisplay();
-                    } else if (timerMode === 'longBreak') {
-                        // Reset sessions after long break
-                        currentSession = 1;
-                        resetSessionDots();
-                        updateSessionDisplay();
-                    }
-                    switchMode('pomodoro');
-                }
-            }
-            
-            // Switch timer mode
+
             function switchMode(mode) {
-                timerMode = mode;
+                currentMode = mode;
+                timeRemaining = pomodoroDurations[mode];
                 
-                // Update UI
-                modeButtons.forEach(button => {
-                    if (button.dataset.mode === mode) {
-                        button.classList.add('active');
-                    } else {
-                        button.classList.remove('active');
-                    }
+                modeButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.mode === mode);
                 });
                 
-                // Set appropriate time
-                switch(mode) {
-                    case 'pomodoro':
-                        timeLeft = settings.pomodoro * 60;
-                        timerDisplay.style.color = 'var(--pomodoro)';
-                        break;
-                    case 'shortBreak':
-                        timeLeft = settings.shortBreak * 60;
-                        timerDisplay.style.color = 'var(--short-break)';
-                        break;
-                    case 'longBreak':
-                        timeLeft = settings.longBreak * 60;
-                        timerDisplay.style.color = 'var(--long-break)';
-                        break;
-                }
-                
-                originalTime = timeLeft;
-                updateDisplay();
-                
-                // Reset timer state
-                clearInterval(timerInterval);
-                isRunning = false;
-                startBtn.innerHTML = '<i class="fas fa-play"></i>';
-            }
-            
-            // Update session display
-            function updateSessionDisplay() {
-                sessionsCountDisplay.textContent = `Session ${currentSession}/${maxSessions}`;
-            }
-            
-            // Reset session dots
-            function resetSessionDots() {
-                sessionDots.forEach(dot => {
-                    dot.classList.remove('completed');
-                });
-            }
-            
-            // Task management functions
-            function renderTasks() {
-                tasksContainer.innerHTML = '';
-                
-                tasks.forEach((task, index) => {
-                    const taskElement = document.createElement('div');
-                    taskElement.className = `task-item ${task.completed ? 'completed' : ''}`;
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.checked = task.completed;
-                    checkbox.className = 'task-checkbox';
-                    checkbox.addEventListener('change', () => toggleTask(index));
-                    
-                    const taskText = document.createElement('span');
-                    taskText.className = 'task-text';
-                    taskText.textContent = task.text;
-                    
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'delete-task';
-                    deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-                    deleteBtn.addEventListener('click', () => deleteTask(index));
-                    
-                    taskElement.appendChild(checkbox);
-                    taskElement.appendChild(taskText);
-                    taskElement.appendChild(deleteBtn);
-                    
-                    tasksContainer.appendChild(taskElement);
-                });
-                
-                // Save tasks to local storage
-                localStorage.setItem('pomodoroTasks', JSON.stringify(tasks));
-            }
-            
-            function addTask() {
-                const taskText = taskInput.value.trim();
-                if (taskText) {
-                    tasks.push({
-                        text: taskText,
-                        completed: false
-                    });
-                    taskInput.value = '';
-                    renderTasks();
-                }
-            }
-            
-            function toggleTask(index) {
-                tasks[index].completed = !tasks[index].completed;
-                renderTasks();
-            }
-            
-            function deleteTask(index) {
-                tasks.splice(index, 1);
-                renderTasks();
-            }
-            
-            // Save settings
-            function saveSettings() {
-                settings.pomodoro = parseInt(document.getElementById('pomodoro-time').value) || 25;
-                settings.shortBreak = parseInt(document.getElementById('short-break-time').value) || 5;
-                settings.longBreak = parseInt(document.getElementById('long-break-time').value) || 15;
-                
-                localStorage.setItem('pomodoroSettings', JSON.stringify(settings));
-                
-                // Reset the timer with new settings
+                body.classList.toggle('break-active', mode.includes('Break'));
+
                 resetTimer();
-                
-                // Show a brief feedback message
-                const saveBtn = document.querySelector('.save-settings');
-                const originalText = saveBtn.textContent;
-                saveBtn.textContent = 'Saved!';
-                saveBtn.style.backgroundColor = 'var(--secondary)';
-                
-                setTimeout(() => {
-                    saveBtn.textContent = originalText;
-                    saveBtn.style.backgroundColor = 'var(--primary)';
-                }, 2000);
             }
-            
-            // Request notification permission
-            notificationToggle.addEventListener('change', function() {
-                if (this.checked && Notification.permission !== 'granted') {
-                    Notification.requestPermission();
+
+            function startTimer() {
+                if (isRunning) return;
+                isRunning = true;
+                
+                startPauseBtn.innerHTML = '<i class="fas fa-pause"></i><span>Pause</span>';
+
+                timerId = setInterval(() => {
+                    timeRemaining--;
+                    updateDisplay();
+
+                    if (timeRemaining <= 0) {
+                        clearInterval(timerId);
+                        alarmSound.play();
+                        
+                        // Automatically switch to the next mode
+                        if (currentMode === 'work') {
+                            switchMode('shortBreak');
+                        } else {
+                            switchMode('work');
+                        }
+                    }
+                }, 1000);
+            }
+
+            function pauseTimer() {
+                if (!isRunning) return;
+                isRunning = false;
+                clearInterval(timerId);
+                startPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Start</span>';
+            }
+
+            function resetTimer() {
+                pauseTimer();
+                timeRemaining = pomodoroDurations[currentMode];
+                updateDisplay();
+            }
+
+            startPauseBtn.addEventListener('click', () => {
+                if (isRunning) {
+                    pauseTimer();
+                } else {
+                    startTimer();
                 }
             });
-            
-            // Event listeners
-            startBtn.addEventListener('click', toggleTimer);
+
             resetBtn.addEventListener('click', resetTimer);
-            skipBtn.addEventListener('click', skipTimer);
-            
+
             modeButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    switchMode(this.dataset.mode);
+                button.addEventListener('click', () => {
+                    switchMode(button.dataset.mode);
                 });
             });
-            
-            addTaskBtn.addEventListener('click', addTask);
-            taskInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    addTask();
-                }
-            });
 
-            settingsToggle.addEventListener('click', function() {
-                settingsSection.classList.toggle('active');
-            });
-            settingsSection.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('active');
-                }
-            });
-
-            // Initialize settings section in collapsed state
-            settingsSection.classList.remove('active');
-            
-            saveSettingsBtn.addEventListener('click', saveSettings);
-            
-            // Initialize display
+            // Initial setup
             updateDisplay();
         });
     </script>
