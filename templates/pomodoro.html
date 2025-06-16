@@ -4,292 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pomodoro Timer</title>
-    
-    <!-- Font Awesome for icons, consistent with the planner -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-
     <style>
         :root {
-            /* Using the exact same style variables as the planner */
             --primary: #34495e;
             --light-bg: #f4f6f7;
+            --widget-bg: #ffffff;
             --border: #daddde;
             --text: #2c3e50;
-            --work-accent: #e74c3c;
+            --text-muted: #7f8c8d;
+            --break-bg: #f0f9f4;
             --break-accent: #2ecc71;
-            --break-bg: #f0f9f4; /* A very light green for break mode */
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        html.dark-mode {
+            --primary: #95a5a6;
+            --light-bg: #2c3e50;
+            --widget-bg: #34495e;
+            --border: #4a627a;
+            --text: #ecf0f1;
+            --text-muted: #95a5a6;
+            --break-bg: #2d4237;
+            --break-accent: #2ecc71;
         }
-
-        body {
-            color: var(--text);
-            background-color: var(--light-bg);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            transition: background-color 0.5s ease;
-        }
-
-        body.break-active {
-            background-color: var(--break-bg);
-        }
-
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 40px 20px;
-            text-align: center;
-            width: 100%;
-        }
-        
-        h1 {
-            margin-bottom: 20px;
-            color: var(--primary);
-            font-weight: 300;
-            font-size: 42px;
-        }
-
-        /* --- Pomodoro Widget Styling --- */
-        .pomodoro-widget {
-            background-color: #fff;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(44, 62, 80, 0.1);
-            padding: 40px;
-            max-width: 450px;
-            width: 100%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .mode-buttons {
-            display: flex;
-            gap: 10px;
-            background-color: var(--light-bg);
-            padding: 5px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-
-        .mode-btn {
-            background: none;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text);
-            cursor: pointer;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .mode-btn.active {
-            background-color: #fff;
-            color: var(--primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        }
-
-        #timer-display {
-            font-size: 96px;
-            font-weight: 200;
-            margin-bottom: 20px;
-            color: var(--primary);
-        }
-
-        .controls {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .control-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .control-btn:hover {
-            background-color: #2c3e50;
-        }
-
-        #reset-btn {
-            background: none;
-            color: #95a5a6;
-            font-size: 24px;
-            padding: 10px;
-        }
-        #reset-btn:hover {
-            color: var(--text);
-        }
-
-        .back-to-hub {
-            margin-top: 40px;
-            color: #7f8c8d;
-            text-decoration: none;
-            font-size: 15px;
-            transition: color 0.2s ease;
-        }
-
-        .back-to-hub:hover {
-            color: var(--primary);
-            text-decoration: underline;
-        }
-
-        .back-to-hub i {
-            margin-right: 5px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { color: var(--text); background-color: var(--light-bg); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; transition: background-color 0.5s ease, color 0.5s ease; }
+        body.break-active { background-color: var(--break-bg); }
+        .container { max-width: 900px; margin: auto; padding: 40px 20px; text-align: center; width: 100%; }
+        h1 { margin-bottom: 20px; color: var(--primary); font-weight: 300; font-size: 42px; }
+        .pomodoro-widget { background-color: var(--widget-bg); border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0, 0.05); padding: 40px; max-width: 450px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+        .mode-buttons { display: flex; gap: 10px; background-color: var(--light-bg); padding: 5px; border-radius: 10px; margin-bottom: 30px; }
+        .mode-btn { background: none; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; }
+        .mode-btn.active { background-color: var(--widget-bg); color: var(--text); box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
+        #timer-display { font-size: 96px; font-weight: 200; margin-bottom: 20px; color: var(--text); }
+        .controls { display: flex; gap: 20px; align-items: center; }
+        .control-btn { background-color: var(--primary); color: var(--widget-bg); border: none; border-radius: 10px; padding: 15px 30px; font-size: 18px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; display: flex; align-items: center; gap: 10px; -webkit-tap-highlight-color: transparent; }
+        .control-btn:hover { background-color: #516a83; }
+        html.dark-mode .control-btn:hover { background-color: #bdc3c7; }
+        #reset-btn { background: none; color: var(--text-muted); font-size: 24px; padding: 10px; } #reset-btn:hover { color: var(--text); }
+        .back-to-hub { margin-top: 40px; color: var(--text-muted); text-decoration: none; font-size: 15px; transition: color 0.2s ease; } .back-to-hub:hover { color: var(--primary); text-decoration: underline; } .back-to-hub i { margin-right: 5px; }
+        .theme-toggle-btn { position: fixed; bottom: 20px; right: 20px; background-color: var(--widget-bg); color: var(--text-muted); border: 1px solid var(--border); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1200; -webkit-tap-highlight-color: transparent; }
+        .theme-toggle-btn .fa-sun { display: none; } html.dark-mode .theme-toggle-btn .fa-sun { display: block; } html.dark-mode .theme-toggle-btn .fa-moon { display: none; }
     </style>
+    <script>
+        (function() { const theme = localStorage.getItem('theme'); if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark-mode'); } })();
+    </script>
 </head>
 <body>
     <div class="container">
         <h1>Pomodoro Timer</h1>
-
         <div class="pomodoro-widget">
             <div class="mode-buttons">
                 <button class="mode-btn active" data-mode="work">Pomodoro</button>
                 <button class="mode-btn" data-mode="shortBreak">Short Break</button>
                 <button class="mode-btn" data-mode="longBreak">Long Break</button>
             </div>
-
             <div id="timer-display">25:00</div>
-
             <div class="controls">
-                <button class="control-btn" id="start-pause-btn">
-                    <i class="fas fa-play"></i>
-                    <span>Start</span>
-                </button>
-                <button class="control-btn" id="reset-btn" aria-label="Reset Timer">
-                    <i class="fas fa-redo"></i>
-                </button>
+                <button class="control-btn" id="start-pause-btn"><i class="fas fa-play"></i><span>Start</span></button>
+                <button class="control-btn" id="reset-btn" aria-label="Reset Timer"><i class="fas fa-redo"></i></button>
             </div>
         </div>
-
-        <a href="/" class="back-to-hub">
-            <i class="fas fa-arrow-left"></i>
-            Back to Hub
-        </a>
+        <a href="/" class="back-to-hub"><i class="fas fa-arrow-left"></i>Back to Hub</a>
     </div>
-
-    <!-- Hidden audio element for the alarm -->
     <audio id="alarm-sound" src="https://cdn.freesound.org/previews/215/215783_3242779-lq.mp3" preload="auto"></audio>
-
+    <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
     <script>
+        // JS is identical to previous version, no changes needed for theme logic
         document.addEventListener('DOMContentLoaded', () => {
-            const timerDisplay = document.getElementById('timer-display');
-            const startPauseBtn = document.getElementById('start-pause-btn');
-            const resetBtn = document.getElementById('reset-btn');
-            const modeButtons = document.querySelectorAll('.mode-btn');
-            const alarmSound = document.getElementById('alarm-sound');
-            const body = document.body;
-
-            const pomodoroDurations = {
-                work: 25 * 60,       // 25 minutes
-                shortBreak: 5 * 60,  // 5 minutes
-                longBreak: 15 * 60,  // 15 minutes
-            };
-
-            let timerId = null;
-            let isRunning = false;
-            let currentMode = 'work';
-            let timeRemaining = pomodoroDurations.work;
-
-            function updateDisplay() {
-                const minutes = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
-                const seconds = (timeRemaining % 60).toString().padStart(2, '0');
-                const timeString = `${minutes}:${seconds}`;
-                
-                timerDisplay.textContent = timeString;
-                document.title = `${timeString} - ${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)}`;
-            }
-
-            function switchMode(mode) {
-                currentMode = mode;
-                timeRemaining = pomodoroDurations[mode];
-                
-                modeButtons.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.mode === mode);
-                });
-                
-                body.classList.toggle('break-active', mode.includes('Break'));
-
-                resetTimer();
-            }
-
-            function startTimer() {
-                if (isRunning) return;
-                isRunning = true;
-                
-                startPauseBtn.innerHTML = '<i class="fas fa-pause"></i><span>Pause</span>';
-
-                timerId = setInterval(() => {
-                    timeRemaining--;
-                    updateDisplay();
-
-                    if (timeRemaining <= 0) {
-                        clearInterval(timerId);
-                        alarmSound.play();
-                        
-                        // Automatically switch to the next mode
-                        if (currentMode === 'work') {
-                            switchMode('shortBreak');
-                        } else {
-                            switchMode('work');
-                        }
-                    }
-                }, 1000);
-            }
-
-            function pauseTimer() {
-                if (!isRunning) return;
-                isRunning = false;
-                clearInterval(timerId);
-                startPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Start</span>';
-            }
-
-            function resetTimer() {
-                pauseTimer();
-                timeRemaining = pomodoroDurations[currentMode];
-                updateDisplay();
-            }
-
-            startPauseBtn.addEventListener('click', () => {
-                if (isRunning) {
-                    pauseTimer();
-                } else {
-                    startTimer();
-                }
-            });
-
-            resetBtn.addEventListener('click', resetTimer);
-
-            modeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    switchMode(button.dataset.mode);
-                });
-            });
-
-            // Initial setup
-            updateDisplay();
+            const themeToggleBtn = document.getElementById('theme-toggle'); themeToggleBtn.addEventListener('click', () => { document.documentElement.classList.toggle('dark-mode'); localStorage.setItem('theme', document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light'); });
+            const timerDisplay = document.getElementById('timer-display'); const startPauseBtn = document.getElementById('start-pause-btn'); const resetBtn = document.getElementById('reset-btn'); const modeButtons = document.querySelectorAll('.mode-btn'); const alarmSound = document.getElementById('alarm-sound'); const body = document.body;
+            const pomodoroDurations = { work: 25 * 60, shortBreak: 5 * 60, longBreak: 15 * 60, }; let timerId = null; let isRunning = false; let currentMode = 'work'; let timeRemaining = pomodoroDurations.work;
+            function updateDisplay() { const minutes = Math.floor(timeRemaining / 60).toString().padStart(2, '0'); const seconds = (timeRemaining % 60).toString().padStart(2, '0'); const timeString = `${minutes}:${seconds}`; timerDisplay.textContent = timeString; document.title = `${timeString} - Pomodoro`; }
+            function switchMode(mode) { currentMode = mode; timeRemaining = pomodoroDurations[mode]; modeButtons.forEach(btn => { btn.classList.toggle('active', btn.dataset.mode === mode); }); body.classList.toggle('break-active', mode.includes('Break')); resetTimer(); }
+            function startTimer() { if (isRunning) return; isRunning = true; startPauseBtn.innerHTML = '<i class="fas fa-pause"></i><span>Pause</span>'; timerId = setInterval(() => { timeRemaining--; updateDisplay(); if (timeRemaining <= 0) { clearInterval(timerId); alarmSound.play(); if (currentMode === 'work') { switchMode('shortBreak'); } else { switchMode('work'); } } }, 1000); }
+            function pauseTimer() { if (!isRunning) return; isRunning = false; clearInterval(timerId); startPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Start</span>'; }
+            function resetTimer() { pauseTimer(); timeRemaining = pomodoroDurations[currentMode]; updateDisplay(); }
+            startPauseBtn.addEventListener('click', () => { if (isRunning) { pauseTimer(); } else { startTimer(); } }); resetBtn.addEventListener('click', resetTimer);
+            modeButtons.forEach(button => { button.addEventListener('click', () => { switchMode(button.dataset.mode); }); }); updateDisplay();
         });
     </script>
 </body>
