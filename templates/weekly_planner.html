@@ -3,885 +3,613 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly Planner</title>
+    <title>Weekly Planner (Final Version)</title>
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Theme management -->
-    <script src="{{ url_for('static', filename='theme.js') }}"></script>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
     <style>
         :root {
-            --primary: #3498db;
-            --secondary: #2ecc71;
-            --work: #f39c12;
-            --sleep: #9b59b6;
-            --free: #e74c3c;
-            --mensa: #f1c40f;
-            --study: #1abc9c;
-            --exercise: #d35400;
-            --light-bg: #ecf0f1;
-            --border: #bdc3c7;
+            --primary: #34495e;
+            --light-bg: #f4f6f7;
+            --border: #daddde;
             --text: #2c3e50;
-            --FSUB: #85c1e9;
-            --algo: #aed6f1;
-            --infosys: #a9dfbf;
-            --web: #f9e79f;
+            --cursor-color: #e74c3c;
+            
+            --color-university: #3498db;
+            --color-study-bg: #eaf5fc;
+            --color-work: #f39c12;
+            --color-health: #9b59b6;
+            --color-free: #2ecc71;
+            --color-food: #f1c40f;
+            --color-routine: #ecf0f1;
+
+            --desktop-row-height: 40px;
+            --mobile-hour-height: 60px; /* Represents one hour in the mobile view */
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
             color: var(--text);
             background-color: var(--light-bg);
             font-size: 14px;
+            line-height: 1.4;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 10px;
+            padding: 15px;
         }
 
         h1 {
             margin-bottom: 10px;
             text-align: center;
             color: var(--primary);
+            font-weight: 300;
         }
 
-        .week-view {
-            display: block;
-        }
-
-        .day-view {
-            display: none;
-        }
-
-        .timetable {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-
-        .timetable th, .timetable td {
-            border: 1px solid var(--border);
-            padding: 1px;
-            vertical-align: top;
-            height: 40px;
-            position: relative;
-        }
-
-        .timetable th {
-            background-color: var(--primary);
-            color: white;
-            text-align: center;
-            font-weight: bold;
-            padding: 5px;
-        }
-
-        .timetable .time-col {
-            width: 70px;
-            text-align: center;
-            background-color: var(--primary);
-            color: white;
-            font-weight: bold;
-        }
-
-        .block {
-            padding: 2px 4px;
-            height: 100%;
-            width: 100%;
-            color: var(--text);
-            border-radius: 2px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .block.course {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .block.FSUB {
-            background-color: var(--FSUB);
-        }
-
-        .block.algo {
-            background-color: var(--algo);
-        }
-
-        .block.infosys {
-            background-color: var(--infosys);
-        }
-
-        .block.web {
-            background-color: var(--web);
-        }
-
-        .block.work {
-            background-color: var(--work);
-        }
-
-        .block.sleep {
-            background-color: var(--sleep);
-            color: white;
-        }
-
-        .block.free {
-            background-color: var(--free);
-            color: white;
-        }
-
-        .block.mensa {
-            background-color: var(--mensa);
-        }
-
-        .block.gym {
-            background-color: var(--exercise);
-            color: white;
-        }
-
-        .block.cycling {
-            background-color: var(--secondary);
-        }
-
-        .block.study {
-            background-color: var(--study);
-            color: white;
-        }
-
-        .popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
+        .header-container {
+            display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-        }
-
-        .popup {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
             position: relative;
-        }
-
-        .popup-close {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text);
-        }
-
-        .popup h3 {
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
-        .popup p {
-            margin-bottom: 10px;
-        }
-
-        .detail-timeline {
-            margin-top: 20px;
-        }
-
-        .detail-item {
-            display: flex;
-            margin-bottom: 8px;
-        }
-
-        .detail-time {
-            width: 80px;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .detail-activity {
-            flex-grow: 1;
-        }
-
-        .day-nav {
-            display: none;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .day-nav button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            margin: 0 5px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .day-title {
-            font-size: 20px;
-            font-weight: bold;
-            display: inline-block;
-            margin: 0 15px;
+            margin-bottom: 5px;
         }
 
         .legend {
             display: flex;
             flex-wrap: wrap;
-            margin: 10px 0;
+            gap: 10px 20px;
+            margin-top: 10px;
             justify-content: center;
+            padding: 10px;
         }
 
-        .legend-item {
+        .legend-item { display: flex; align-items: center; font-size: 13px; }
+        .legend-color { width: 15px; height: 15px; margin-right: 8px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
+        .legend-color.striped {
+            background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1) 75%, transparent 75%, transparent);
+            background-size: 8px 8px;
+        }
+
+        /* --- Desktop Timetable Styles --- */
+        .timetable-wrapper {
+            overflow-x: auto;
+            position: relative;
+        }
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .timetable th, .timetable td {
+            border: 1px solid var(--border);
+            padding: 2px;
+            vertical-align: top;
+            height: var(--desktop-row-height);
+            position: relative;
+            text-align: center;
+        }
+        .timetable thead th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            padding: 10px 5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .timetable .time-col {
+            width: 75px;
+            font-weight: 600;
+            background-color: #fff;
+            color: var(--primary);
+            vertical-align: middle;
+            font-size: 12px;
+        }
+        .block {
+            padding: 5px; height: 100%; width: 100%; border-radius: 4px; overflow: hidden; cursor: pointer; display: flex;
+            flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 12px;
+            font-weight: 500; transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .block i { margin-bottom: 3px; font-size: 14px; opacity: 0.8; }
+        .block:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(44, 62, 80, 0.2); z-index: 5; position: relative; }
+        .block, .mobile-event, .legend-toggle-btn { -webkit-tap-highlight-color: transparent; }
+
+        /* --- NEW: Mobile Day View Styles --- */
+        .mobile-day-view {
+            display: none; /* Shown via JS for mobile */
+            position: relative;
+            padding: 0 10px;
+        }
+        .mobile-event-list {
+            position: relative;
+        }
+        .mobile-time-marker {
+            height: var(--mobile-hour-height);
             display: flex;
-            align-items: center;
-            margin-right: 15px;
-            margin-bottom: 5px;
+            align-items: flex-start;
+            color: #7f8c8d;
+            font-size: 12px;
+            border-top: 1px dashed var(--border);
+            padding-top: 4px;
+        }
+        .mobile-event {
+            position: absolute;
+            left: 65px; /* Leave space for time markers */
+            right: 0;
+            background-color: white;
+            border-radius: 6px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 4px rgba(44,62,80,0.08);
+            border-left: 5px solid; /* Category color hint */
+            cursor: pointer;
+        }
+        .mobile-event-header { display: flex; align-items: center; margin-bottom: 4px; }
+        .mobile-event-header i { margin-right: 8px; font-size: 16px; }
+        .mobile-event-title { font-weight: 600; font-size: 15px; }
+        .mobile-event-time { font-size: 13px; color: #7f8c8d; }
+        .mobile-event-details { font-size: 12px; color: #7f8c8d; font-style: italic; margin-top: 4px; }
+
+
+        /* --- Category Styles (reused for both views) --- */
+        .block.type-university, .mobile-event.type-university { border-color: var(--color-university); }
+        .block.type-work,       .mobile-event.type-work       { border-color: var(--color-work); }
+        .block.type-health,     .mobile-event.type-health     { border-color: var(--color-health); }
+        .block.type-free,       .mobile-event.type-free       { border-color: var(--color-free); }
+        .block.type-food,       .mobile-event.type-food       { border-color: var(--color-food); }
+        .block.type-routine,    .mobile-event.type-routine    { border-color: var(--border); }
+        .block.type-study,      .mobile-event.type-study      { border-color: var(--color-university); }
+
+        .block.type-university, .block.type-work, .block.type-health, .block.type-free { color: white; }
+        .block.type-university { background-color: var(--color-university); }
+        .block.type-work { background-color: var(--color-work); }
+        .block.type-health { background-color: var(--color-health); }
+        .block.type-free { background-color: var(--color-free); }
+        .block.type-food { background-color: var(--color-food); color: var(--text); }
+        .block.type-routine { background-color: var(--color-routine); color: var(--text); }
+        .block.type-study {
+            background-color: var(--color-study-bg); color: var(--color-university); font-weight: 600;
+            background-image: linear-gradient(45deg, rgba(255,255,255,0.5) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.5) 75%, transparent 75%, transparent);
+            background-size: 10px 10px;
+        }
+        .block.type-study i, .mobile-event.type-study i { color: var(--color-university); }
+        .mobile-event.type-study { background-color: var(--color-study-bg); }
+        .mobile-event .mobile-event-title { color: var(--text); }
+        .mobile-event.type-study i { color: var(--color-university); }
+
+        /* --- Time Cursor Style --- */
+        #time-cursor {
+            position: absolute; height: 2px; background-color: var(--cursor-color); z-index: 20;
+            pointer-events: none; display: none; transition: top 0.2s ease-out;
+        }
+        #time-cursor::before {
+            content: ''; position: absolute; width: 10px; height: 10px; background-color: var(--cursor-color);
+            border-radius: 50%; left: -5px; top: -4px;
+        }
+        .mobile-day-view #time-cursor::before { left: 0; transform: translateX(-50%); }
+        
+        /* Popup and initial display styles */
+        .popup-overlay, .day-nav { display: none; }
+        .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; }
+        .popup-overlay.visible { display: flex; opacity: 1; }
+        .popup { background-color: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; transform: scale(0.95); transition: transform 0.3s ease; }
+        .popup-overlay.visible .popup { transform: scale(1); }
+        .popup-close { position: absolute; right: 15px; top: 15px; font-size: 28px; line-height: 1; cursor: pointer; color: #aaa; }
+
+        /* --- NEW: Bottom Sheet Legend Styles --- */
+
+        .legend-toggle-btn {
+
+            display: none;
+
+            position: absolute;
+
+            right: 0;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            background: none;
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            color: var(--primary);
+
+            cursor: pointer;
+
+            width: 40px;
+
+            height: 40px;
+
+            font-size: 18px;
+
         }
 
-        .legend-color {
-            width: 15px;
-            height: 15px;
-            margin-right: 5px;
-            border-radius: 3px;
+        .bottom-sheet-overlay {
+
+            position: fixed;
+
+            top: 0; left: 0; width: 100%; height: 100%;
+
+            background-color: rgba(0, 0, 0, 0.4);
+
+            z-index: 1100;
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            transition: opacity 0.3s ease, visibility 0s 0.3s;
+
         }
 
-        /* Mobile styles */
+        .bottom-sheet-overlay.visible {
+
+            opacity: 1;
+
+            visibility: visible;
+
+            transition: opacity 0.3s ease;
+
+        }
+
+        .bottom-sheet {
+
+            position: fixed;
+
+            bottom: 0; left: 0; width: 100%;
+
+            background-color: white;
+
+            border-top-left-radius: 16px;
+
+            border-top-right-radius: 16px;
+
+            padding: 15px 20px 30px;
+
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+
+            transform: translateY(100%);
+
+            transition: transform 0.3s ease-in-out;
+
+        }
+
+        .bottom-sheet-overlay.visible .bottom-sheet {
+
+            transform: translateY(0);
+
+        }
+
+        .sheet-handle {
+
+            width: 40px;
+
+            height: 5px;
+
+            background-color: var(--border);
+
+            border-radius: 2.5px;
+
+            margin: 0 auto 15px;
+
+            cursor: pointer;
+
+        }
+
+        .sheet-content {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 15px;
+
+        }
+
+
+
+        @media (min-width: 769px) {
+            .timetable-wrapper { display: block !important; }
+            .mobile-day-view, .day-nav, .legend-toggle-btn { display: none !important; }
+        }
+
         @media (max-width: 768px) {
-            .week-view {
-                display: none;
-            }
-
-            .day-view {
-                display: block;
-            }
-
-            .day-nav {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .timetable th:not(.time-col) {
-                font-size: 16px;
-            }
+            .timetable-wrapper, .legend { display: none !important; }
+            .mobile-day-view, .day-nav, .legend-toggle-btn { display: block !important; }
+            .day-nav { display: flex !important; justify-content: space-between; align-items: center; padding: 0 10px; margin-bottom: 15px; }
+            .day-nav button { background-color: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 18px; }
+            .day-title { font-size: 20px; font-weight: bold; color: var(--primary); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Weekly Planner</h1>
+        <div class="header-container">
+
+            <h1>Weekly Planner</h1>
+
+            <button id="legend-toggle-btn" class="legend-toggle-btn" aria-label="Show Legend">
+
+                <i class="fas fa-palette"></i>
+
+            </button>
+
+        </div>
         
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--sleep);"></div>
-                <span>Sleep</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--work);"></div>
-                <span>Work</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--FSUB);"></div>
-                <span>FSUB</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--algo);"></div>
-                <span>Algorithmen</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--infosys);"></div>
-                <span>Infosysteme</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--web);"></div>
-                <span>Web</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--mensa);"></div>
-                <span>Mensa</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--exercise);"></div>
-                <span>Gym</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--secondary);"></div>
-                <span>Cycling</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--study);"></div>
-                <span>Study</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: var(--free);"></div>
-                <span>Free Time</span>
-            </div>
+        <div class="day-nav" id="day-nav">
+            <button id="prev-day" aria-label="Previous Day">←</button>
+            <div id="day-title" class="day-title"></div>
+            <button id="next-day" aria-label="Next Day">→</button>
         </div>
 
-        <!-- Week View - Desktop -->
-        <div class="week-view">
-            <table class="timetable">
-                <thead>
-                    <tr>
-                        <th class="time-col">Zeit</th>
-                        <th>Montag</th>
-                        <th>Dienstag</th>
-                        <th>Mittwoch</th>
-                        <th>Donnerstag</th>
-                        <th>Freitag</th>
-                        <th>Samstag</th>
-                        <th>Sonntag</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 6:00 - 7:00 -->
-                    <tr>
-                        <td class="time-col">6:00</td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                    </tr>
-                    <!-- 7:00 - 8:00 -->
-                    <tr>
-                        <td class="time-col">7:00</td>
-                        <td><div class="block" data-activity="Morning Routine">Aufstehen & Vorbereiten</div></td>
-                        <td><div class="block" data-activity="Morning Routine">Aufstehen & Vorbereiten</div></td>
-                        <td><div class="block" data-activity="Morning Routine">Aufstehen & Vorbereiten</div></td>
-                        <td><div class="block" data-activity="Morning Routine">Aufstehen & Vorbereiten</div></td>
-                        <td><div class="block" data-activity="Morning Routine">Aufstehen & Vorbereiten</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                    </tr>
-                    <!-- 8:00 - 9:00 -->
-                    <tr>
-                        <td class="time-col">8:00</td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block" data-activity="Morning Routine">Aufstehen & Frühstück</div></td>
-                        <td><div class="block" data-activity="Morning Routine">Aufstehen & Frühstück</div></td>
-                    </tr>
-                    <!-- 9:00 - 10:00 -->
-                    <tr>
-                        <td class="time-col">9:00</td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block work" data-activity="Work">Arbeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block cycling" data-activity="Cycling">Radfahren</div></td>
-                    </tr>
-                    <!-- 10:00 - 11:00 -->
-                    <tr>
-                        <td class="time-col">10:00</td>
-                        <td><div class="block algo" data-activity="Algorithmen und Datenstrukturen, 42-115">Algorithmen und DS</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (Algo)</div></td>
-                        <td><div class="block course" data-activity="Computergrafik, 42-110">Computergrafik</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (FSUB)</div></td>
-                        <td><div class="block algo" data-activity="Algorithmen und Datenstrukturen (Übung), 48-579">Algorithmen Übung</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block cycling" data-activity="Cycling">Radfahren</div></td>
-                    </tr>
-                    <!-- 11:00 - 12:00 -->
-                    <tr>
-                        <td class="time-col">11:00</td>
-                        <td><div class="block algo" data-activity="Algorithmen und Datenstrukturen, 42-115">Algorithmen und DS</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (Algo)</div></td>
-                        <td><div class="block course" data-activity="Computergrafik, 42-110">Computergrafik</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (FSUB)</div></td>
-                        <td><div class="block algo" data-activity="Algorithmen und Datenstrukturen (Übung), 48-579">Algorithmen Übung</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (FSUB)</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                    </tr>
-                    <!-- 12:00 - 13:00 -->
-                    <tr>
-                        <td class="time-col">12:00</td>
-                        <td><div class="block FSUB" data-activity="Formale Sprachen und Berechenbarkeit (Übung), 48-379">FSUB Übung</div></td>
-                        <td><div class="block mensa" data-activity="Lunch at Mensa">Mensa</div></td>
-                        <td><div class="block infosys" data-activity="Informationssysteme (Übung), 52-203">Infosysteme Übung</div></td>
-                        <td><div class="block algo" data-activity="Algorithmen und Datenstrukturen, 42-115">Algorithmen und DS</div></td>
-                        <td><div class="block mensa" data-activity="Lunch at Mensa">Mensa</div></td>
-                        <td><div class="block" data-activity="Lunch">Mittagessen</div></td>
-                        <td><div class="block" data-activity="Lunch">Mittagessen</div></td>
-                    </tr>
-                    <!-- 13:00 - 14:00 -->
-                    <tr>
-                        <td class="time-col">13:00</td>
-                        <td><div class="block FSUB" data-activity="Formale Sprachen und Berechenbarkeit (Übung), 48-379">FSUB Übung</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (FSUB)</div></td>
-                        <td><div class="block infosys" data-activity="Informationssysteme (Übung), 52-203">Infosysteme Übung</div></td>
-                        <td><div class="block algo" data-activity="Algorithmen und Datenstrukturen, 42-115">Algorithmen und DS</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (Infosys)</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (Algo)</div></td>
-                    </tr>
-                    <!-- 14:00 - 15:00 -->
-                    <tr>
-                        <td class="time-col">14:00</td>
-                        <td><div class="block course" data-activity="Computergrafik, 46-220">Computergrafik</div></td>
-                        <td><div class="block web" data-activity="Web 2.0 Technologien 2 (Dienste, Sicherheit und Datenschutz), 24-102">Web 2.0</div></td>
-                        <td><div class="block FSUB" data-activity="Formale Sprachen und Berechenbarkeit, 42-110">FSUB</div></td>
-                        <td><div class="block infosys" data-activity="Informationssysteme (Übung), 46-268">Infosysteme Übung</div></td>
-                        <td><div class="block infosys" data-activity="Informationssysteme (Übung), 46-453">Infosysteme Übung</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (Infosys)</div></td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (Algo)</div></td>
-                    </tr>
-                    <!-- 15:00 - 16:00 -->
-                    <tr>
-                        <td class="time-col">15:00</td>
-                        <td><div class="block course" data-activity="Computergrafik, 46-220">Computergrafik</div></td>
-                        <td><div class="block web" data-activity="Web 2.0 Technologien 2 (Dienste, Sicherheit und Datenschutz), 24-102">Web 2.0</div></td>
-                        <td><div class="block FSUB" data-activity="Formale Sprachen und Berechenbarkeit, 42-110">FSUB</div></td>
-                        <td><div class="block infosys" data-activity="Informationssysteme (Übung), 46-268">Infosysteme Übung</div></td>
-                        <td><div class="block infosys" data-activity="Informationssysteme (Übung), 46-453">Infosysteme Übung</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                    </tr>
-                    <!-- 16:00 - 17:00 -->
-                    <tr>
-                        <td class="time-col">16:00</td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (FSUB)</div></td>
-                        <td><div class="block infosys" data-activity="Informationssysteme, 46-280">Infosysteme</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block FSUB" data-activity="Formale Sprachen und Berechenbarkeit, 46-220">FSUB</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                    </tr>
-                    <!-- 17:00 - 18:00 -->
-                    <tr>
-                        <td class="time-col">17:00</td>
-                        <td><div class="block study" data-activity="Study Time">Lernzeit (Algo)</div></td>
-                        <td><div class="block infosys" data-activity="Informationssysteme, 46-280">Infosysteme</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block FSUB" data-activity="Formale Sprachen und Berechenbarkeit, 46-220">FSUB</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block study" data-activity="Study Time">Vorbereitung nächste Woche</div></td>
-                    </tr>
-                    <!-- 18:00 - 19:00 -->
-                    <tr>
-                        <td class="time-col">18:00</td>
-                        <td><div class="block" data-activity="Dinner">Abendessen</div></td>
-                        <td><div class="block" data-activity="Dinner">Abendessen</div></td>
-                        <td><div class="block" data-activity="Dinner">Abendessen</div></td>
-                        <td><div class="block" data-activity="Dinner">Abendessen</div></td>
-                        <td><div class="block" data-activity="Dinner">Abendessen</div></td>
-                        <td><div class="block" data-activity="Dinner">Abendessen</div></td>
-                        <td><div class="block" data-activity="Dinner">Abendessen</div></td>
-                    </tr>
-                    <!-- 19:00 - 20:00 -->
-                    <tr>
-                        <td class="time-col">19:00</td>
-                        <td><div class="block gym" data-activity="Gym">Fitnessstudio</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block gym" data-activity="Gym">Fitnessstudio</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block gym" data-activity="Gym">Fitnessstudio</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                    </tr>
-                    <!-- 20:00 - 21:00 -->
-                    <tr>
-                        <td class="time-col">20:00</td>
-                        <td><div class="block gym" data-activity="Gym">Fitnessstudio</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block gym" data-activity="Gym">Fitnessstudio</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block gym" data-activity="Gym">Fitnessstudio</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                    </tr>
-                    <!-- 21:00 - 22:00 -->
-                    <tr>
-                        <td class="time-col">21:00</td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                    </tr>
-                    <!-- 22:00 - 23:00 -->
-                    <tr>
-                        <td class="time-col">22:00</td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block free" data-activity="Free Time">Freizeit</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                    </tr>
-                    <!-- 23:00 - 00:00 -->
-                    <tr>
-                        <td class="time-col">23:00</td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                        <td><div class="block sleep" data-activity="Sleep">Schlafen</div></td>
-                    </tr>
-                </tbody>
+        <div class="timetable-wrapper">
+            <table class="timetable" id="planner-table">
+                <thead id="planner-head"></thead>
+                <tbody id="planner-body"></tbody>
             </table>
         </div>
-
-        <!-- Day View - Mobile -->
-        <div class="day-view">
-            <div class="day-nav">
-                <button id="prev-day">←</button>
-                <div class="day-title">Montag</div>
-                <button id="next-day">→</button>
-            </div>
-            <table class="timetable" id="day-timetable">
-                <!-- Will be filled by JavaScript -->
-            </table>
-        </div>
-
-        <!-- Popup for detailed view -->
+        <div class="legend" id="legend-container"></div>
+        <div class="mobile-day-view" id="mobile-day-view"></div>
         <div class="popup-overlay" id="popup-overlay">
             <div class="popup">
-                <div class="popup-close">&times;</div>
-                <h3 id="popup-title">Activity Details</h3>
+                <span class="popup-close" role="button" aria-label="Close">×</span>
+                <h3 id="popup-title"></h3>
                 <p id="popup-time"></p>
                 <p id="popup-location"></p>
-                <div class="detail-timeline" id="detail-timeline">
-                    <!-- Will be filled by JavaScript -->
-                </div>
+                <p id="popup-details"></p>
             </div>
         </div>
+        
 
-        <!-- Quick theme selector -->
-        <div class="theme-quick-select"></div>
+        <!-- NEW: Bottom Sheet for Legend -->
 
+        <div class="bottom-sheet-overlay" id="legend-overlay">
+
+            <div class="bottom-sheet" id="legend-sheet">
+
+                <div class="sheet-handle" id="sheet-handle"></div>
+
+                <div class="sheet-content" id="sheet-legend-content">
+
+                    <!-- Legend items will be injected here by JS -->
+
+                </div>
+
+            </div>
+
+        </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Day view functionality for mobile
-            const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
-            let currentDayIndex = 0;
-            const dayTitle = document.querySelector('.day-title');
-            const prevDayBtn = document.getElementById('prev-day');
-            const nextDayBtn = document.getElementById('next-day');
-            const dayTimetable = document.getElementById('day-timetable');
-
-            // Popup functionality
-            const popupOverlay = document.getElementById('popup-overlay');
-            const popupClose = document.querySelector('.popup-close');
-            const popupTitle = document.getElementById('popup-title');
-            const popupTime = document.getElementById('popup-time');
-            const popupLocation = document.getElementById('popup-location');
-            const detailTimeline = document.getElementById('detail-timeline');
+        document.addEventListener('DOMContentLoaded', () => {
+            const START_HOUR = 6;
+            const END_HOUR = 23;
+            const DAYS = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+            const MOBILE_BREAKPOINT = 768;
             
-            // Activity details for popup
-            const activityDetails = {
-                'Sleep': {
-                    details: [
-                        { time: '00:00 - 06:00', activity: 'Schlafphase' }
-                    ],
-                    location: ''
-                },
-                'Morning Routine': {
-                    details: [
-                        { time: '07:00 - 07:15', activity: 'Aufstehen' },
-                        { time: '07:15 - 07:30', activity: 'Duschen' },
-                        { time: '07:30 - 07:45', activity: 'Anziehen' },
-                        { time: '07:45 - 08:00', activity: 'Frühstück' }
-                    ],
-                    location: 'Zuhause'
-                },
-                'Work': {
-                    details: [
-                        { time: '00:00 - 00:30', activity: 'Einarbeiten & E-Mails' },
-                        { time: '00:30 - 01:30', activity: 'Hauptaufgaben' },
-                        { time: '01:30 - 01:45', activity: 'Kurze Pause' },
-                        { time: '01:45 - 02:00', activity: 'Nebenaufgaben & Lernen möglich' }
-                    ],
-                    location: 'Büro/Remote'
-                },
-                'Cycling': {
-                    details: [
-                        { time: '00:00 - 00:10', activity: 'Vorbereiten & Fahrrad holen' },
-                        { time: '00:10 - 00:25', activity: 'Warm-up' },
-                        { time: '00:25 - 01:25', activity: 'Hauptstrecke' },
-                        { time: '01:25 - 01:40', activity: 'Cool-down' },
-                        { time: '01:40 - 02:00', activity: 'Zurück & Fahrrad wegstellen' }
-                    ],
-                    location: 'Draußen - Radweg'
-                },
-                'Gym': {
-                    details: [
-                        { time: '00:00 - 00:10', activity: 'Umziehen' },
-                        { time: '00:10 - 00:20', activity: 'Aufwärmen' },
-                        { time: '00:20 - 01:30', activity: 'Training' },
-                        { time: '01:30 - 01:40', activity: 'Dehnen' },
-                        { time: '01:40 - 02:00', activity: 'Duschen & Umziehen' }
-                    ],
-                    location: 'Fitnessstudio'
-                },
-                'FSUB': {
-                    details: [
-                        { time: '00:00 - 00:10', activity: 'Vorbereitung & Material sichten' },
-                        { time: '00:10 - 00:55', activity: 'Hauptvorlesung/Übung' },
-                        { time: '00:55 - 01:05', activity: 'Kurze Pause' },
-                        { time: '01:05 - 01:50', activity: 'Fortsetzung' }
-                    ],
-                    location: ''
-                },
-                'Study Time': {
-                    details: [
-                        { time: '00:00 - 00:10', activity: 'Vorbereitung & Material sammeln' },
-                        { time: '00:10 - 00:50', activity: 'Intensive Lernphase' },
-                        { time: '00:50 - 01:00', activity: 'Kurze Pause' },
-                        { time: '01:00 - 01:50', activity: 'Fortgesetzte Lernphase' },
-                        { time: '01:50 - 02:00', activity: 'Zusammenfassung & Notizen' }
-                    ],
-                    location: 'Bibliothek/Zuhause'
-                },
-                'Free Time': {
-                    details: [
-                        { time: 'Flexible', activity: 'Entspannung nach Wahl' },
-                        { time: 'Flexible', activity: 'Hobbys/Freunde treffen' },
-                        { time: 'Flexible', activity: 'Medienkonsum' }
-                    ],
-                    location: 'Variabel'
-                },
-                'Lunch at Mensa': {
-                    details: [
-                        { time: '00:00 - 00:10', activity: 'Weg zur Mensa' },
-                        { time: '00:10 - 00:20', activity: 'Anstehen & Essen holen' },
-                        { time: '00:20 - 00:45', activity: 'Essen & Gespräche' },
-                        { time: '00:45 - 01:00', activity: 'Zurück zum nächsten Termin' }
-                    ],
-                    location: 'Mensa'
-                },
-                'Dinner': {
-                    details: [
-                        { time: '00:00 - 00:15', activity: 'Vorbereiten/Kochen' },
-                        { time: '00:15 - 00:45', activity: 'Essen' },
-                        { time: '00:45 - 01:00', activity: 'Aufräumen' }
-                    ],
-                    location: 'Zuhause'
-                }
-                // Andere Aktivitäten haben ähnliche Strukturen
-            };
+            var scheduleData = [ /* Collapsed */ ];
 
-            // Function to populate the day view table
-            function populateDayView(dayIndex) {
-                // Clear the table first
-                dayTimetable.innerHTML = '';
+            const LEGEND_DATA = { 'university': { name: 'University' }, 'study': { name: 'Study' }, 'work': { name: 'Work' }, 'health': { name: 'Health & Sleep' }, 'free': { name: 'Free Time' }, 'food': { name: 'Meals' } };
+            scheduleData.push( ...[0,1,2,3,4].map(day => ({ day, start: 6, end: 7, title: "Schlafen", type: 'health', icon: 'fas fa-bed' })), ...[5,6].map(day => ({ day, start: 6, end: 8, title: "Schlafen", type: 'health', icon: 'fas fa-bed' })), ...[0,1,2,3,4].map(day => ({ day, start: 7, end: 8, title: "Routine", type: 'routine', icon: 'fas fa-clock' })), ...[0,1,2,3,4].map(day => ({ day, start: 8, end: 10, title: "Arbeit", type: 'work', icon: 'fas fa-briefcase' })), ...[0,1,2,3,4,5,6].map(day => ({ day, start: 18, end: 19, title: "Abendessen", type: 'food', icon: 'fas fa-utensils' })), ...[0,1,2,3,4,6].map(day => ({ day, start: 22, end: 24, title: "Schlafen", type: 'health', icon: 'fas fa-bed' })), { day: 5, start: 23, end: 24, title: "Schlafen", type: 'health', icon: 'fas fa-bed' }, { day: 0, start: 10, end: 12, title: "Algorithmen", type: 'university', icon: 'fas fa-graduation-cap', location: '42-115' }, { day: 0, start: 12, end: 14, title: "FSUB Übung", type: 'university', icon: 'fas fa-graduation-cap', location: '48-379' }, { day: 0, start: 14, end: 16, title: "Computergrafik", type: 'university', icon: 'fas fa-graduation-cap', location: '46-220' }, { day: 0, start: 16, end: 17, title: "Lernzeit", details: "FSUB", type: 'study', icon: 'fas fa-book' }, { day: 0, start: 17, end: 18, title: "Lernzeit", details: "Algo", type: 'study', icon: 'fas fa-book' }, { day: 0, start: 19, end: 21, title: "Fitnessstudio", type: 'health', icon: 'fas fa-dumbbell' }, { day: 0, start: 21, end: 22, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 1, start: 10, end: 12, title: "Lernzeit", details: "Algo", type: 'study', icon: 'fas fa-book' }, { day: 1, start: 12, end: 13, title: "Mensa", type: 'food', icon: 'fas fa-utensils' }, { day: 1, start: 13, end: 14, title: "Lernzeit", details: "FSUB", type: 'study', icon: 'fas fa-book' }, { day: 1, start: 14, end: 16, title: "Web 2.0", type: 'university', icon: 'fas fa-graduation-cap', location: '24-102' }, { day: 1, start: 16, end: 18, title: "Infosysteme", type: 'university', icon: 'fas fa-graduation-cap', location: '46-280' }, { day: 1, start: 19, end: 22, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 2, start: 10, end: 12, title: "Computergrafik", type: 'university', icon: 'fas fa-graduation-cap', location: '42-110' }, { day: 2, start: 12, end: 14, title: "Infosysteme Übung", type: 'university', icon: 'fas fa-graduation-cap', location: '52-203' }, { day: 2, start: 14, end: 16, title: "FSUB", type: 'university', icon: 'fas fa-graduation-cap', location: '42-110' }, { day: 2, start: 16, end: 18, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 2, start: 19, end: 21, title: "Fitnessstudio", type: 'health', icon: 'fas fa-dumbbell' }, { day: 2, start: 21, end: 22, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 3, start: 10, end: 12, title: "Lernzeit", details: "FSUB", type: 'study', icon: 'fas fa-book' }, { day: 3, start: 12, end: 14, title: "Algorithmen", type: 'university', icon: 'fas fa-graduation-cap', location: '42-115' }, { day: 3, start: 14, end: 16, title: "Infosysteme Übung", type: 'university', icon: 'fas fa-graduation-cap', location: '46-268' }, { day: 3, start: 16, end: 18, title: "FSUB", type: 'university', icon: 'fas fa-graduation-cap', location: '46-220' }, { day: 3, start: 19, end: 22, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 4, start: 10, end: 12, title: "Algorithmen Übung", type: 'university', icon: 'fas fa-graduation-cap', location: '48-579' }, { day: 4, start: 12, end: 13, title: "Mensa", type: 'food', icon: 'fas fa-utensils' }, { day: 4, start: 14, end: 16, title: "Infosysteme Übung", type: 'university', icon: 'fas fa-graduation-cap', location: '46-453' }, { day: 4, start: 13, end: 14, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 4, start: 16, end: 18, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 4, start: 19, end: 21, title: "Fitnessstudio", type: 'health', icon: 'fas fa-dumbbell' }, { day: 4, start: 21, end: 22, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 5, start: 8, end: 9, title: "Frühstück", type: 'routine', icon: 'fas fa-clock' }, { day: 5, start: 9, end: 11, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 5, start: 11, end: 12, title: "Lernzeit", details: "FSUB", type: 'study', icon: 'fas fa-book' }, { day: 5, start: 12, end: 13, title: "Mittagessen", type: 'food', icon: 'fas fa-utensils' }, { day: 5, start: 13, end: 15, title: "Lernzeit", details: "Infosys", type: 'study', icon: 'fas fa-book' }, { day: 5, start: 15, end: 18, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 5, start: 19, end: 23, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 6, start: 8, end: 9, title: "Frühstück", type: 'routine', icon: 'fas fa-clock' }, { day: 6, start: 9, end: 11, title: "Radfahren", type: 'health', icon: 'fas fa-bicycle' }, { day: 6, start: 11, end: 12, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 6, start: 12, end: 13, title: "Mittagessen", type: 'food', icon: 'fas fa-utensils' }, { day: 6, start: 13, end: 15, title: "Lernzeit", details: "Algo", type: 'study', icon: 'fas fa-book' }, { day: 6, start: 15, end: 17, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' }, { day: 6, start: 17, end: 18, title: "Wochenplanung", type: 'study', icon: 'fas fa-calendar-check' }, { day: 6, start: 19, end: 22, title: "Freizeit", type: 'free', icon: 'fas fa-mug-saucer' },);
 
-                // Get the day's activities from the week view
-                const weekTable = document.querySelector('.week-view .timetable');
-                const timeSlots = weekTable.querySelectorAll('.time-col');
-                const selectedDayColumn = dayIndex + 1; // +1 because first column is time
-                
-                // Create header row
-                const headerRow = document.createElement('tr');
-                const headerTimeCell = document.createElement('th');
-                headerTimeCell.className = 'time-col';
-                headerTimeCell.textContent = 'Zeit';
-                headerRow.appendChild(headerTimeCell);
-                
-                const headerDayCell = document.createElement('th');
-                headerDayCell.textContent = days[dayIndex];
-                headerDayCell.colSpan = 1;
-                headerRow.appendChild(headerDayCell);
-                
-                dayTimetable.appendChild(headerRow);
-                
-                // Create rows for each time slot
-                timeSlots.forEach((timeSlot, index) => {
-                    if (index === 0) return; // Skip the header row
-                    
-                    const row = document.createElement('tr');
-                    
-                    // Time column
-                    const timeCell = document.createElement('td');
-                    timeCell.className = 'time-col';
-                    timeCell.textContent = timeSlot.textContent;
-                    row.appendChild(timeCell);
-                    
-                    // Activity column
-                    const activityCell = document.createElement('td');
-                    
-                    // Get the corresponding cell from the week view
-                    const weekViewRow = weekTable.rows[index];
-                    if (weekViewRow && selectedDayColumn < weekViewRow.cells.length) {
-                        const weekViewCell = weekViewRow.cells[selectedDayColumn];
-                        const activityBlock = weekViewCell.querySelector('.block');
-                        
-                        if (activityBlock) {
-                            // Clone the activity block
-                            const clonedBlock = activityBlock.cloneNode(true);
-                            activityCell.appendChild(clonedBlock);
+            const timeCursor = document.createElement('div');
+            timeCursor.id = 'time-cursor';
+
+            const desktopWrapper = document.querySelector('.timetable-wrapper');
+            const mobileWrapper = document.getElementById('mobile-day-view');
+            const dayTitleEl = document.getElementById('day-title');
+            const popupOverlay = document.getElementById('popup-overlay');
+            const legendOverlay = document.getElementById('legend-overlay');
+            
+            let currentDayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+
+            function renderDesktopView() {
+                const plannerHead = document.getElementById('planner-head');
+                const plannerBody = document.getElementById('planner-body');
+                let headHtml = '<tr><th class="time-col">Zeit</th>';
+                DAYS.forEach(day => headHtml += `<th>${day}</th>`);
+                plannerHead.innerHTML = headHtml + '</tr>';
+                const grid = Array.from({ length: END_HOUR - START_HOUR + 1 }, () => Array(DAYS.length).fill(null));
+                scheduleData.forEach(event => {
+                    if (event.start < START_HOUR) return;
+                    const duration = event.end - event.start;
+                    if (duration <= 0) return;
+                    const gridRow = event.start - START_HOUR;
+                    if (grid[gridRow] && grid[gridRow][event.day] === null) {
+                        grid[gridRow][event.day] = { ...event, rowspan: duration };
+                        for (let i = 1; i < duration; i++) {
+                            if (gridRow + i < grid.length) grid[gridRow + i][event.day] = 'occupied';
                         }
                     }
+                });
+                let bodyHtml = '';
+                for (let hour = START_HOUR; hour <= END_HOUR; hour++) {
+                    bodyHtml += `<tr><td class="time-col">${hour}:00</td>`;
+                    for (let day = 0; day < DAYS.length; day++) {
+                        const cell = grid[hour - START_HOUR][day];
+                        if (cell === 'occupied') continue;
+                        if (cell) {
+                            bodyHtml += `<td rowspan="${cell.rowspan}"><div class="block type-${cell.type}" data-event='${JSON.stringify(cell)}'>
+                                ${cell.icon ? `<i class="${cell.icon}"></i>` : ''}<span>${cell.title}</span></div></td>`;
+                        } else { bodyHtml += '<td></td>'; }
+                    }
+                    bodyHtml += '</tr>';
+                }
+                plannerBody.innerHTML = bodyHtml;
+                desktopWrapper.appendChild(timeCursor);
+            }
+
+            function renderMobileView(dayIndex) {
+                dayTitleEl.textContent = DAYS[dayIndex];
+                const eventsToday = scheduleData.filter(e => e.day === dayIndex).sort((a, b) => a.start - b.start);
+                let listHtml = '<div class="mobile-event-list">';
+                // Add time markers
+                for (let hour = START_HOUR; hour <= END_HOUR; hour++) {
+                    listHtml += `<div class="mobile-time-marker">${hour}:00</div>`;
+                }
+                // Add event cards
+                eventsToday.forEach(event => {
+                    const duration = event.end - event.start;
+                    const top = (event.start - START_HOUR) * (document.documentElement.style.getPropertyValue('--mobile-hour-height').replace('px', '') || 60);
+                    const height = duration * (document.documentElement.style.getPropertyValue('--mobile-hour-height').replace('px', '') || 60) - 5; /* -10 for margin */
                     
-                    row.appendChild(activityCell);
-                    dayTimetable.appendChild(row);
+                    listHtml += `
+                        <div class="mobile-event type-${event.type}" style="top: ${top}px; height: ${height}px;" data-event='${JSON.stringify(event)}'>
+                            <div class="mobile-event-header">
+                                ${event.icon ? `<i class="${event.icon}"></i>` : ''}
+                                <span class="mobile-event-title">${event.title}</span>
+                            </div>
+                            <div class="mobile-event-time">${event.start}:00 - ${event.end}:00</div>
+                            ${event.location ? `<div class="mobile-event-details">Ort: ${event.location}</div>` : ''}
+                            ${event.details ? `<div class="mobile-event-details">${event.details}</div>` : ''}
+                        </div>`;
                 });
-                
-                // Update day title
-                dayTitle.textContent = days[dayIndex];
-                
-                // Update event listeners for the blocks in the day view
-                attachBlockClickListeners();
-            }
-            
-            // Navigation buttons for mobile day view
-            prevDayBtn.addEventListener('click', function() {
-                currentDayIndex = (currentDayIndex - 1 + 7) % 7; // Ensure it wraps around
-                populateDayView(currentDayIndex);
-            });
-            
-            nextDayBtn.addEventListener('click', function() {
-                currentDayIndex = (currentDayIndex + 1) % 7;
-                populateDayView(currentDayIndex);
-            });
 
-            // Touch swipe functionality for mobile day view
-            let touchStartX = 0;
-            let touchEndX = 0;
-            
-            document.querySelector('.day-view').addEventListener('touchstart', function(e) {
-                touchStartX = e.changedTouches[0].screenX;
-            }, false);
-            
-            document.querySelector('.day-view').addEventListener('touchend', function(e) {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, false);
-            
-            function handleSwipe() {
-                const minSwipeDistance = 50; // Minimum distance for a swipe
-                
-                if (touchEndX < touchStartX - minSwipeDistance) {
-                    // Swipe left - next day
-                    nextDayBtn.click();
-                }
-                
-                if (touchEndX > touchStartX + minSwipeDistance) {
-                    // Swipe right - previous day
-                    prevDayBtn.click();
-                }
+                mobileWrapper.innerHTML = listHtml + '</div>';
+                mobileWrapper.appendChild(timeCursor);
             }
 
-            // Popup functionality for detailed views
-            function showPopup(activity, timeText) {
-                // Set the title
-                popupTitle.textContent = activity;
+            function updateCursorPosition() {
+                const now = new Date();
+                let todayIndex = now.getDay() === 0 ? 6 : now.getDay() - 1;
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+                if (todayIndex >= DAYS.length || currentHour < START_HOUR || currentHour > END_HOUR) {
+                    timeCursor.style.display = 'none';
+                    return;
+                }
+                const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+                const minutesFromStart = (currentHour - START_HOUR) * 60 + currentMinute;
                 
-                // Set the time
-                popupTime.textContent = `Zeit: ${timeText}`;
-                
-                // Set the location if available
-                const activityInfo = activityDetails[activity];
-                if (activityInfo && activityInfo.location) {
-                    popupLocation.textContent = `Ort: ${activityInfo.location}`;
-                    popupLocation.style.display = 'block';
+                if (isMobile) {
+                    const mobileHourHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--mobile-hour-height'));
+                    const topPosition = (minutesFromStart / 60) * mobileHourHeight;
+                    timeCursor.style.top = `${topPosition}px`;
+                    timeCursor.style.width = 'calc(100% - 65px)';
+                    timeCursor.style.left = '65px';
+                    timeCursor.style.display = (currentDayIndex === todayIndex) ? 'block' : 'none';
                 } else {
-                    popupLocation.style.display = 'none';
+                    const headerRow = document.querySelector('#planner-head tr');
+                    const firstBodyRow = document.querySelector('#planner-body tr');
+                    if (!headerRow || !firstBodyRow) return;
+                    const tableHeaderTop = headerRow.offsetHeight;
+                    const rowHeight = firstBodyRow.offsetHeight;
+                    const topPosition = tableHeaderTop + (minutesFromStart / 60) * rowHeight;
+                    timeCursor.style.top = `${topPosition}px`;
+                    
+                    const dayHeaders = Array.from(headerRow.querySelectorAll('th:not(.time-col)'));
+                    const todayHeader = dayHeaders[todayIndex];
+                    if (!todayHeader) return;
+                    timeCursor.style.left = `${todayHeader.offsetLeft}px`;
+                    timeCursor.style.width = `${todayHeader.offsetWidth}px`;
+                    timeCursor.style.display = 'block';
                 }
-                
-                // Clear previous details
-                detailTimeline.innerHTML = '';
-                
-                // Add detailed timeline if available
-                if (activityInfo && activityInfo.details) {
-                    activityInfo.details.forEach(detail => {
-                        const detailItem = document.createElement('div');
-                        detailItem.className = 'detail-item';
-                        
-                        const detailTime = document.createElement('div');
-                        detailTime.className = 'detail-time';
-                        detailTime.textContent = detail.time;
-                        
-                        const detailActivity = document.createElement('div');
-                        detailActivity.className = 'detail-activity';
-                        detailActivity.textContent = detail.activity;
-                        
-                        detailItem.appendChild(detailTime);
-                        detailItem.appendChild(detailActivity);
-                        detailTimeline.appendChild(detailItem);
-                    });
-                } else {
-                    // No details available
-                    const noDetails = document.createElement('p');
-                    noDetails.textContent = 'Keine detaillierten Informationen verfügbar.';
-                    detailTimeline.appendChild(noDetails);
-                }
-                
-                // Show the popup
-                popupOverlay.style.display = 'flex';
             }
-            
-            // Close popup when clicking the X or outside the popup
-            popupClose.addEventListener('click', function() {
-                popupOverlay.style.display = 'none';
-            });
-            
-            popupOverlay.addEventListener('click', function(e) {
-                if (e.target === popupOverlay) {
-                    popupOverlay.style.display = 'none';
-                }
-            });
 
-            // Attach click event listeners to all blocks
-            function attachBlockClickListeners() {
-                const blocks = document.querySelectorAll('.block');
-                blocks.forEach(block => {
-                    block.addEventListener('click', function() {
-                        const activity = this.getAttribute('data-activity');
-                        const timeCell = this.closest('tr').querySelector('.time-col').textContent;
-                        showPopup(activity, timeCell);
-                    });
+            function showPopup(eventData) {
+                const event = JSON.parse(eventData);
+                document.getElementById('popup-title').textContent = event.title;
+                document.getElementById('popup-time').textContent = `Zeit: ${event.start}:00 - ${event.end}:00`;
+                const locEl = document.getElementById('popup-location');
+                const detEl = document.getElementById('popup-details');
+                locEl.textContent = event.location ? `Ort: ${event.location}` : '';
+                detEl.textContent = event.details ? `Details: ${event.details}` : '';
+                locEl.style.display = event.location ? 'block' : 'none';
+                detEl.style.display = event.details ? 'block' : 'none';
+                popupOverlay.classList.add('visible');
+            }
+
+            function renderLegends() {
+                const legendHtml = Object.entries(LEGEND_DATA).map(([type, { name }]) => {
+
+                    const isStudy = type === 'study';
+
+                    const stripedClass = isStudy ? 'striped' : '';
+
+                    const bgColor = isStudy ? 'var(--color-study-bg)' : `var(--color-${type})`;
+
+                    return `<div class="legend-item">
+                                <div class="legend-color ${stripedClass}" style="background-color: ${bgColor};"></div>
+                                <span>${name}</span>
+                            </div>`;
+                }).join('');
+
+                document.getElementById('legend-container').innerHTML = legendHtml;
+
+                document.getElementById('sheet-legend-content').innerHTML = legendHtml;
+            }
+
+            function setupEventListeners() {
+                document.body.addEventListener('click', e => {
+                    const eventTarget = e.target.closest('[data-event]');
+                    if (eventTarget) showPopup(eventTarget.dataset.event);
                 });
+                document.querySelector('.popup-close').addEventListener('click', () => popupOverlay.classList.remove('visible'));
+                popupOverlay.addEventListener('click', e => { if (e.target === popupOverlay) popupOverlay.classList.remove('visible'); });
+                document.getElementById('prev-day').addEventListener('click', () => {
+                    currentDayIndex = (currentDayIndex - 1 + DAYS.length) % DAYS.length;
+                    renderMobileView(currentDayIndex);
+                    updateCursorPosition();
+                });
+                document.getElementById('next-day').addEventListener('click', () => {
+                    currentDayIndex = (currentDayIndex + 1) % DAYS.length;
+                    renderMobileView(currentDayIndex);
+                    updateCursorPosition();
+                });
+
+                // --- NEW: Bottom Sheet Legend Listeners ---
+
+                const legendToggleBtn = document.getElementById('legend-toggle-btn');
+                const sheetHandle = document.getElementById('sheet-handle');
+                function showLegendSheet() { legendOverlay.classList.add('visible'); }
+                function hideLegendSheet() { legendOverlay.classList.remove('visible'); }
+                legendToggleBtn.addEventListener('click', showLegendSheet);
+                legendOverlay.addEventListener('click', (e) => {
+
+                    if (e.target === legendOverlay) hideLegendSheet();
+
+                });
+
+                sheetHandle.addEventListener('click', hideLegendSheet);
             }
 
-            // Initialize the day view for mobile
-            if (window.innerWidth <= 768) {
-                populateDayView(currentDayIndex);
-            }
-            
-            // Handle window resize events
-            window.addEventListener('resize', function() {
-                if (window.innerWidth <= 768) {
-                    populateDayView(currentDayIndex);
+            function renderUI() {
+                if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                    renderMobileView(currentDayIndex);
+                } else {
+                    renderDesktopView();
                 }
-            });
+                updateCursorPosition();
+            }
+
+            const legendContainer = document.getElementById('legend-container');
+            legendContainer.innerHTML = Object.entries(LEGEND_DATA).map(([type, { name }]) => { const isStudy = type === 'study'; const stripedClass = isStudy ? 'striped' : ''; const bgColor = isStudy ? 'var(--color-study-bg)' : `var(--color-${type})`; return `<div class="legend-item"><div class="legend-color ${stripedClass}" style="background-color: ${bgColor};"></div><span>${name}</span></div>`; }).join('');
             
-            // Initialize the popup event listeners for desktop view
-            attachBlockClickListeners();
+            renderLegends();
+            renderUI();
+            setupEventListeners();
+            setInterval(updateCursorPosition, 60000);
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                // A small debounce to prevent rapid re-rendering
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(renderUI, 100);
+            });
         });
     </script>
 </body>
