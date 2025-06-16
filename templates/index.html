@@ -52,12 +52,12 @@
     <div class="container">
         <h1>Productivity Hub</h1>
         <div class="hub-nav">
-            <a href="/weekly_planner" class="hub-card">
+            <a href="{{ url_for('weekly_planner') }}" class="hub-card">
                 <div class="icon"><i class="fas fa-calendar-week"></i></div>
                 <h2>Weekly Planner</h2>
                 <p>Visualize your week, manage tasks, and stay organized.</p>
             </a>
-            <a href="/pomodoro" class="hub-card">
+            <a href="{{ url_for('pomodoro') }}" class="hub-card">
                 <div class="icon"><i class="fas fa-stopwatch-20"></i></div>
                 <h2>Pomodoro Timer</h2>
                 <p>Boost your focus with the Pomodoro Technique.</p>
