@@ -1,1291 +1,415 @@
 <!DOCTYPE html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Weekly Planner (Final Version)</title>
+<html lang="de-DE">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wochenplan V4 - Optimiert</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
-    />
+<style>
+    /* --- General & Layout --- */
+    :root {
+        /* Base Colors */
+        --border-color: #dee2e6;
+        --shadow-color: rgba(101, 119, 134, 0.2);
+        --shadow-hover-color: rgba(101, 119, 134, 0.4);
+        --text-light: #ffffff;
+        --text-dark: #212529;
 
-    <style>
-      :root {
-        --primary: #34495e;
-        --light-bg: #f4f6f7;
-        --widget-bg: #ffffff;
-        --border: #daddde;
-        --text: #2c3e50;
-        --text-muted: #7f8c8d;
-        --cursor-color: #e74c3c;
-        --color-university: #3498db;
-        --color-study-bg: #eaf5fc;
-        --color-work: #f39c12;
-        --color-health: #9b59b6;
-        --color-free: #2ecc71;
-        --color-food: #f1c40f;
-        --color-routine: #ecf0f1;
-        --desktop-row-height: 40px;
-        --mobile-hour-height: 60px;
-      }
-      html.dark-mode {
-        --primary: #95a5a6;
-        --light-bg: #2c3e50;
-        --widget-bg: #34495e;
-        --border: #4a627a;
-        --text: #ecf0f1;
-        --text-muted: #95a5a6;
-        --color-study-bg: #283747;
-        --color-routine: #34495e;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
-      }
-      body {
-        color: var(--text);
-        background-color: var(--light-bg);
-        transition: background-color 0.3s ease, color 0.3s ease;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 15px;
-      }
-      .header-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        margin-bottom: 5px;
-      }
-      h1 {
-        margin: 0;
-        color: var(--primary);
-        font-weight: 300;
-        font-size: 26px;
-      }
-      .legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px 20px;
-        margin-top: 10px;
-        justify-content: center;
-        padding: 10px;
-      }
-      .legend-item {
-        display: flex;
-        align-items: center;
-        font-size: 13px;
-      }
-      .legend-color {
-        width: 15px;
-        height: 15px;
-        margin-right: 8px;
-        border-radius: 3px;
-        border: 1px solid var(--border);
-      }
-      .legend-color.striped {
-        background-image: linear-gradient(
-          45deg,
-          rgba(255, 255, 255, 0.1) 25%,
-          transparent 25%,
-          transparent 50%,
-          rgba(255, 255, 255, 0.1) 50%,
-          rgba(255, 255, 255, 0.1) 75%,
-          transparent 75%,
-          transparent
-        );
-        background-size: 8px 8px;
-      }
-      .timetable-wrapper {
-        overflow-x: auto;
-        position: relative;
-      }
-      .timetable {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-        background-color: var(--widget-bg);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        border-radius: 8px;
+        /* --- NEW High-Contrast Activity Palette --- */
+        --color-sleep: #343a40;      /* Dark Gray - Good for Rest */
+        --color-routine: #fff9db;    /* Light Yellow */
+        --color-meal: #E8590C;       /* Rich, warm orange */
+        --color-break: #c3fae8;      /* Light Mint Green */
+        --color-review: #0B7285;     /* Deep Teal */
+        --color-sport: #2F9E44;      /* Rich Green */
+        --color-errands: #1971C2;    /* Strong Blue */
+        --color-freetime-text: #495057; /* Darker grey text for freetime */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Inter', 'Liberation Sans', Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: var(--text-dark);
+        padding: 1rem;
+        height: 100vh;
         overflow: hidden;
-      }
-      .timetable th,
-      .timetable td {
-        border: 1px solid var(--border);
-        padding: 2px;
-        vertical-align: top;
-        height: var(--desktop-row-height);
-        position: relative;
+    }
+    
+    h1 {
         text-align: center;
-      }
-      .timetable thead th {
-        background-color: var(--primary);
-        color: var(--light-bg);
-        font-weight: 600;
-        padding: 10px 5px;
+        margin-bottom: 0.75rem;
+        color: #343a40;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+
+    table {
+        width: 100%;
+        height: calc(100vh - 5rem);
+        border-collapse: separate; /* Changed for border-radius */
+        border-spacing: 0;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden; /* Clips children to the border-radius */
+        box-shadow: 0 4px 12px var(--shadow-color);
+    }
+
+    td, th {
+        vertical-align: top;
+        font-size: 9pt;
+        border-bottom: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        padding: 6px 8px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    td:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px var(--shadow-hover-color);
+        z-index: 10;
+        position: relative;
+    }
+
+    th:last-child, td:last-child { border-right: none; }
+    tbody tr:last-child td { border-bottom: none; }
+
+    p { white-space: normal; line-height: 1.3; }
+    p b { font-weight: 600; display: block; margin-bottom: 2px; font-size: 9.5pt; color: #000; }
+    
+    /* --- Header & Time Column --- */
+    thead th {
+        position: -webkit-sticky; /* For Safari */
         position: sticky;
         top: 0;
-        z-index: 10;
-        border-color: var(--primary);
-      }
-      .timetable .time-col {
-        background-color: var(--widget-bg);
-        color: var(--primary);
-      }
-      .block {
-        padding: 5px;
-        height: 100%;
-        width: 100%;
-        border-radius: 4px;
-        overflow: hidden;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        font-size: 12px;
-        font-weight: 500;
-      }
-      .block i {
-        margin-bottom: 3px;
-        font-size: 14px;
-        opacity: 0.8;
-      }
-      .block,
-      .mobile-event,
-      .legend-toggle-btn {
-        -webkit-tap-highlight-color: transparent;
-      }
-      .mobile-day-view {
-        display: none;
-        position: relative;
-        padding: 0 10px;
-      }
-      .mobile-event-list {
-        position: relative;
-      }
-      .mobile-time-marker {
-        height: var(--mobile-hour-height);
-        display: flex;
-        align-items: flex-start;
-        color: var(--text-muted);
-        font-size: 12px;
-        border-top: 1px dashed var(--border);
-        padding-top: 4px;
-      }
-      .mobile-event {
-        position: absolute;
-        left: 65px;
-        right: 0;
-        background-color: var(--widget-bg);
-        border-radius: 6px;
-        padding: 10px 15px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        border-left: 5px solid;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-      .mobile-event-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 4px;
-      }
-      .mobile-event-header i {
-        margin-right: 8px;
-        font-size: 16px;
-      }
-      .mobile-event-title {
-        font-weight: 600;
-        font-size: 15px;
-      }
-      .mobile-event-time {
-        font-size: 13px;
-        color: var(--text-muted);
-      }
-      .block.type-university,
-      .mobile-event.type-university {
-        border-color: var(--color-university);
-      }
-      .block.type-work,
-      .mobile-event.type-work {
-        border-color: var(--color-work);
-      }
-      .block.type-health,
-      .mobile-event.type-health {
-        border-color: var(--color-health);
-      }
-      .block.type-free,
-      .mobile-event.type-free {
-        border-color: var(--color-free);
-      }
-      .block.type-food,
-      .mobile-event.type-food {
-        border-color: var(--color-food);
-      }
-      .block.type-routine,
-      .mobile-event.type-routine {
-        border-color: var(--border);
-      }
-      .block.type-study,
-      .mobile-event.type-study {
-        border-color: var(--color-university);
-      }
-      .block.type-university,
-      .block.type-work,
-      .block.type-health,
-      .block.type-free {
-        color: white;
-      }
-      .block.type-university {
-        background-color: var(--color-university);
-      }
-      .block.type-work {
-        background-color: var(--color-work);
-      }
-      .block.type-health {
-        background-color: var(--color-health);
-      }
-      .block.type-free {
-        background-color: var(--color-free);
-      }
-      .block.type-food {
-        background-color: var(--color-food);
-        color: var(--text);
-      }
-      .block.type-routine {
-        background-color: var(--color-routine);
-        color: var(--text-muted);
-        border: 1px dashed var(--border);
-      }
-      .block.type-study {
-        background-color: var(--color-study-bg);
-        color: var(--color-university);
-        font-weight: 600;
-        background-image: linear-gradient(
-          45deg,
-          rgba(255, 255, 255, 0.1) 25%,
-          transparent 25%,
-          transparent 50%,
-          rgba(255, 255, 255, 0.1) 50%,
-          rgba(255, 255, 255, 0.1) 75%,
-          transparent 75%,
-          transparent
-        );
-        background-size: 10px 10px;
-      }
-      .block.type-study i,
-      .mobile-event.type-study i {
-        color: var(--color-university);
-      }
-      .mobile-event.type-study {
-        background-color: var(--color-study-bg);
-      }
-      .mobile-event .mobile-event-title {
-        color: var(--text);
-      }
-      #time-cursor {
-        position: absolute;
-        height: 2px;
-        background-color: var(--cursor-color);
         z-index: 20;
-        pointer-events: none;
-        display: none;
-        transition: top 0.2s ease-out;
-      }
-      #time-cursor::before {
-        content: "";
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        background-color: var(--cursor-color);
-        border-radius: 50%;
-        top: -4px;
-      }
-      .timetable-wrapper #time-cursor::before {
-        left: -5px;
-      }
-      .mobile-day-view #time-cursor::before {
-        left: 0;
-        transform: translateX(-50%);
-      }
-      .popup-overlay,
-      .day-nav {
-        display: none;
-      }
-      .popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.6);
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-      .popup-overlay.visible {
-        display: flex;
-        opacity: 1;
-      }
-      .popup {
-        background-color: var(--widget-bg);
-        padding: 25px;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 500px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        position: relative;
-      }
-      .popup-close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        font-size: 28px;
-        line-height: 1;
-        cursor: pointer;
-        color: var(--text-muted);
-      }
-      .legend-toggle-btn {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--primary);
-        cursor: pointer;
-        width: 40px;
+        font-weight: 600;
+        text-align: center;
+        background-color: #ffffff;
+        border-bottom: 2px solid var(--border-color);
+        font-size: 10pt;
         height: 40px;
-        font-size: 18px;
-      }
-      .bottom-sheet-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-        z-index: 1100;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0s 0.3s;
-      }
-      .bottom-sheet-overlay.visible {
-        opacity: 1;
-        visibility: visible;
-        transition: opacity 0.3s ease;
-      }
-      .bottom-sheet {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: var(--widget-bg);
-        border-top-left-radius: 16px;
-        border-top-right-radius: 16px;
-        padding: 15px 20px 30px;
-        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-        transform: translateY(100%);
-        transition: transform 0.3s ease-in-out;
-      }
-      .bottom-sheet-overlay.visible .bottom-sheet {
-        transform: translateY(0);
-      }
-      .sheet-handle {
-        width: 40px;
-        height: 5px;
-        background-color: var(--border);
-        border-radius: 2.5px;
-        margin: 0 auto 15px;
-        cursor: pointer;
-      }
-      .sheet-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-      }
-      .theme-toggle-btn {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: var(--widget-bg);
-        color: var(--text-muted);
-        border: 1px solid var(--border);
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        font-size: 20px;
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        z-index: 1200;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .theme-toggle-btn .fa-sun {
-        display: none;
-      }
-      html.dark-mode .theme-toggle-btn .fa-sun {
-        display: block;
-      }
-      html.dark-mode .theme-toggle-btn .fa-moon {
-        display: none;
-      }
-      @media (min-width: 769px) {
-        .timetable-wrapper {
-          display: block !important;
-        }
-        .mobile-day-view,
-        .day-nav,
-        .legend-toggle-btn {
-          display: none !important;
-        }
-      }
-      @media (max-width: 768px) {
-        .timetable-wrapper,
-        .legend {
-          display: none !important;
-        }
-        .mobile-day-view,
-        .day-nav,
-        .legend-toggle-btn {
-          display: block !important;
-        }
-        .day-nav {
-          display: flex !important;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0 10px;
-          margin-bottom: 15px;
-        }
-        .day-nav button {
-          background-color: var(--primary);
-          color: var(--light-bg);
-          border: none;
-          padding: 10px 15px;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 18px;
-        }
-        .day-title {
-          font-size: 20px;
-          font-weight: bold;
-          color: var(--primary);
-        }
-      }
-    </style>
-    <script>
-      (function () {
-        const theme = localStorage.getItem("theme");
-        if (
-          theme === "dark" ||
-          (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-        ) {
-          document.documentElement.classList.add("dark-mode");
-        }
-      })();
-    </script>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header-container">
-        <h1>Weekly Planner</h1>
-        <button
-          id="legend-toggle-btn"
-          class="legend-toggle-btn"
-          aria-label="Show Legend"
-        >
-          <i class="fas fa-palette"></i>
-        </button>
-      </div>
-      
-      <div class="day-nav" id="day-nav">
-        <button id="prev-day" aria-label="Previous Day">←</button>
-        <div id="day-title" class="day-title"></div>
-        <button id="next-day" aria-label="Next Day">→</button>
-      </div>
-      <div class="timetable-wrapper">
-        <table class="timetable" id="planner-table">
-          <thead id="planner-head"></thead>
-          <tbody id="planner-body"></tbody>
-        </table>
-      </div>
-      <div class="legend" id="legend-container"></div>
-      <div class="mobile-day-view" id="mobile-day-view"></div>
-      <div class="popup-overlay" id="popup-overlay">
-        <div class="popup">
-          <span class="popup-close" role="button" aria-label="Close">×</span>
-          <h3 id="popup-title"></h3>
-          <p id="popup-time"></p>
-          <p id="popup-location"></p>
-          <p id="popup-details"></p>
-        </div>
-      </div>
-      <div class="bottom-sheet-overlay" id="legend-overlay">
-        <div class="bottom-sheet" id="legend-sheet">
-          <div class="sheet-handle" id="sheet-handle"></div>
-          <div class="sheet-content" id="sheet-legend-content"></div>
-        </div>
-      </div>
-      <button
-        class="theme-toggle-btn"
-        id="theme-toggle"
-        aria-label="Toggle theme"
-      >
-        <i class="fas fa-moon"></i><i class="fas fa-sun"></i>
-      </button>
-    </div>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // Theme toggle script
-        const themeToggleBtn = document.getElementById("theme-toggle");
-        themeToggleBtn.addEventListener("click", () => {
-          document.documentElement.classList.toggle("dark-mode");
-          localStorage.setItem(
-            "theme",
-            document.documentElement.classList.contains("dark-mode")
-              ? "dark"
-              : "light"
-          );
-        });
+    }
 
-        // Planner constants and data (collapsed for brevity)
-        const START_HOUR = 6;
-        const END_HOUR = 23;
-        const DAYS = [
-          "Montag",
-          "Dienstag",
-          "Mittwoch",
-          "Donnerstag",
-          "Freitag",
-          "Samstag",
-          "Sonntag",
-        ];
-        const MOBILE_BREAKPOINT = 768;
-        const LEGEND_DATA = {
-          university: { name: "University" },
-          study: { name: "Study" },
-          work: { name: "Work" },
-          health: { name: "Health & Sleep" },
-          free: { name: "Free Time" },
-          food: { name: "Meals" },
-        };
-        const scheduleData = [];
-        scheduleData.push(
-          ...[0, 1, 2, 3, 4].map((day) => ({
-            day,
-            start: 6,
-            end: 7,
-            title: "Schlafen",
-            type: "health",
-            icon: "fas fa-bed",
-          })),
-          ...[5, 6].map((day) => ({
-            day,
-            start: 6,
-            end: 8,
-            title: "Schlafen",
-            type: "health",
-            icon: "fas fa-bed",
-          })),
-          ...[0, 1, 2, 3, 4].map((day) => ({
-            day,
-            start: 7,
-            end: 8,
-            title: "Routine",
-            type: "routine",
-            icon: "fas fa-clock",
-          })),
-          ...[0, 1, 2, 3, 4].map((day) => ({
-            day,
-            start: 8,
-            end: 10,
-            title: "Arbeit",
-            type: "work",
-            icon: "fas fa-briefcase",
-          })),
-          ...[0, 1, 2, 3, 4, 5, 6].map((day) => ({
-            day,
-            start: 18,
-            end: 19,
-            title: "Abendessen",
-            type: "food",
-            icon: "fas fa-utensils",
-          })),
-          ...[0, 1, 2, 3, 4, 6].map((day) => ({
-            day,
-            start: 22,
-            end: 24,
-            title: "Schlafen",
-            type: "health",
-            icon: "fas fa-bed",
-          })),
-          {
-            day: 5,
-            start: 23,
-            end: 24,
-            title: "Schlafen",
-            type: "health",
-            icon: "fas fa-bed",
-          },
-          {
-            day: 0,
-            start: 10,
-            end: 12,
-            title: "Algorithmen",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "42-115",
-          },
-          {
-            day: 0,
-            start: 12,
-            end: 14,
-            title: "FSUB Übung",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "48-379",
-          },
-          {
-            day: 0,
-            start: 14,
-            end: 16,
-            title: "Computergrafik",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "46-220",
-          },
-          {
-            day: 0,
-            start: 16,
-            end: 17,
-            title: "Lernzeit",
-            details: "FSUB",
-            type: "study",
-            icon: "fas fa-book",
-          },
-          {
-            day: 0,
-            start: 17,
-            end: 18,
-            title: "Lernzeit",
-            details: "Algo",
-            type: "study",
-            icon: "fas fa-book",
-          },
-          {
-            day: 0,
-            start: 19,
-            end: 21,
-            title: "Fitnessstudio",
-            type: "health",
-            icon: "fas fa-dumbbell",
-          },
-          {
-            day: 0,
-            start: 21,
-            end: 22,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 1,
-            start: 10,
-            end: 12,
-            title: "Lernzeit",
-            details: "Algo",
-            type: "study",
-            icon: "fas fa-book",
-          },
-          {
-            day: 1,
-            start: 12,
-            end: 13,
-            title: "Mensa",
-            type: "food",
-            icon: "fas fa-utensils",
-          },
-          {
-            day: 1,
-            start: 13,
-            end: 14,
-            title: "Lernzeit",
-            details: "FSUB",
-            type: "study",
-            icon: "fas fa-book",
-          },
-          {
-            day: 1,
-            start: 14,
-            end: 16,
-            title: "Web 2.0",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "24-102",
-          },
-          {
-            day: 1,
-            start: 16,
-            end: 18,
-            title: "Infosysteme",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "46-280",
-          },
-          {
-            day: 1,
-            start: 19,
-            end: 22,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 2,
-            start: 10,
-            end: 12,
-            title: "Computergrafik",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "42-110",
-          },
-          {
-            day: 2,
-            start: 12,
-            end: 14,
-            title: "Infosysteme Übung",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "52-203",
-          },
-          {
-            day: 2,
-            start: 14,
-            end: 16,
-            title: "FSUB",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "42-110",
-          },
-          {
-            day: 2,
-            start: 16,
-            end: 18,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 2,
-            start: 19,
-            end: 21,
-            title: "Fitnessstudio",
-            type: "health",
-            icon: "fas fa-dumbbell",
-          },
-          {
-            day: 2,
-            start: 21,
-            end: 22,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 3,
-            start: 10,
-            end: 12,
-            title: "Lernzeit",
-            details: "FSUB",
-            type: "study",
-            icon: "fas fa-book",
-          },
-          {
-            day: 3,
-            start: 12,
-            end: 14,
-            title: "Algorithmen",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "42-115",
-          },
-          {
-            day: 3,
-            start: 14,
-            end: 16,
-            title: "Infosysteme Übung",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "46-268",
-          },
-          {
-            day: 3,
-            start: 16,
-            end: 18,
-            title: "FSUB",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "46-220",
-          },
-          {
-            day: 3,
-            start: 19,
-            end: 22,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 4,
-            start: 10,
-            end: 12,
-            title: "Algorithmen Übung",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "48-579",
-          },
-          {
-            day: 4,
-            start: 12,
-            end: 13,
-            title: "Mensa",
-            type: "food",
-            icon: "fas fa-utensils",
-          },
-          {
-            day: 4,
-            start: 14,
-            end: 16,
-            title: "Infosysteme Übung",
-            type: "university",
-            icon: "fas fa-graduation-cap",
-            location: "46-453",
-          },
-          {
-            day: 4,
-            start: 13,
-            end: 14,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 4,
-            start: 16,
-            end: 18,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 4,
-            start: 19,
-            end: 21,
-            title: "Fitnessstudio",
-            type: "health",
-            icon: "fas fa-dumbbell",
-          },
-          {
-            day: 4,
-            start: 21,
-            end: 22,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 5,
-            start: 8,
-            end: 9,
-            title: "Frühstück",
-            type: "routine",
-            icon: "fas fa-clock",
-          },
-          {
-            day: 5,
-            start: 9,
-            end: 11,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 5,
-            start: 11,
-            end: 12,
-            title: "Lernzeit",
-            details: "FSUB",
-            type: "study",
-            icon: "fas fa-book",
-          },
-          {
-            day: 5,
-            start: 12,
-            end: 13,
-            title: "Mittagessen",
-            type: "food",
-            icon: "fas fa-utensils",
-          },
-          {
-            day: 5,
-            start: 13,
-            end: 15,
-            title: "Lernzeit",
-            details: "Infosys",
-            type: "study",
-            icon: "fas fa-book",
-          },
-          {
-            day: 5,
-            start: 15,
-            end: 18,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 5,
-            start: 19,
-            end: 23,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 6,
-            start: 8,
-            end: 9,
-            title: "Frühstück",
-            type: "routine",
-            icon: "fas fa-clock",
-          },
-          {
-            day: 6,
-            start: 9,
-            end: 11,
-            title: "Radfahren",
-            type: "health",
-            icon: "fas fa-bicycle",
-          },
-          {
-            day: 6,
-            start: 11,
-            end: 12,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 6,
-            start: 12,
-            end: 13,
-            title: "Mittagessen",
-            type: "food",
-            icon: "fas fa-utensils",
-          },
-          {
-            day: 6,
-            start: 13,
-            end: 15,
-            title: "Lernzeit",
-            details: "Algo",
-            type: "study",
-            icon: "fas fa-book",
-          },
-          {
-            day: 6,
-            start: 15,
-            end: 17,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          },
-          {
-            day: 6,
-            start: 17,
-            end: 18,
-            title: "Wochenplanung",
-            type: "study",
-            icon: "fas fa-calendar-check",
-          },
-          {
-            day: 6,
-            start: 19,
-            end: 22,
-            title: "Freizeit",
-            type: "free",
-            icon: "fas fa-mug-saucer",
-          }
-        );
+    .time-cell {
+        text-align: right;
+        font-weight: 600;
+        background-color: #f1f3f5;
+        font-size: 8pt;
+        width: 7%;
+    }
+    .time-cell:hover {
+        transform: none; /* Disable hover effect for time cells */
+        box-shadow: none;
+    }
+    
+    /* --- Activity Type Styles (Using NEW Palette) --- */
+    .cell-sleep { background-color: var(--color-sleep); }
+    .cell-routine { background-color: var(--color-routine); }
+    .cell-meal { background-color: var(--color-meal); }
+    .cell-break { background-color: var(--color-break); }
+    .cell-review { background-color: var(--color-review); }
+    .cell-sport { background-color: var(--color-sport); }
+    .cell-errands { background-color: var(--color-errands); }
+    .cell-freetime { background-color:#f8f9fa; color: var(--color-freetime-text); text-align: center; }
+    
+    /* Utility class for light text on dark backgrounds */
+    .text-light { color: var(--text-light); }
+    .text-light p b { color: var(--text-light); }
+    
+    /* Subject Specific Styles (Pastels with good contrast - no change needed) */
+    .cell-p1-fsb { background-color: #d0ebff; } /* Prio 1 */
+    .cell-p2-is { background-color: #fff3bf; }  /* Prio 2a */
+    .cell-p2-aud { background-color: #ffd8d8; } /* Prio 2b */
+    .cell-p3-cg { background-color: #c5f6fa; }  /* Prio 3 */
+    .cell-p4-w2t2 { background-color: #e9ecef; } /* Prio 4 */
 
-        // DOM element references
-        const timeCursor = document.createElement("div");
-        timeCursor.id = "time-cursor";
-        const desktopWrapper = document.querySelector(".timetable-wrapper");
-        const mobileWrapper = document.getElementById("mobile-day-view");
-        const dayTitleEl = document.getElementById("day-title");
-        const popupOverlay = document.getElementById("popup-overlay");
-        const legendOverlay = document.getElementById("legend-overlay");
-        let currentDayIndex =
-          new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+    /* Special Cell Styling */
+    .erholungstag { vertical-align: middle; font-size: 1.1rem; font-weight: 700; background-color: #e7f5ff; }
+    .wochenend-start { font-weight:bold; vertical-align:middle; font-size: 1rem; background-color: #d8f5e7; }
 
-        // Render and event functions collapsed for brevity
-        function renderDesktopView() {
-          /*...*/
+    /* --- Mobile & Responsive Design --- */
+    @media screen and (max-width: 768px) {
+        body { 
+            padding: 0.5rem;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        function showPopup(eventData) {
-          /*...*/
+        h1 { font-size: 1.1rem; margin-bottom: 0.5rem; text-align: center; flex-shrink: 0; }
+        .mobile-nav { display: flex; justify-content: center; margin-bottom: 0.5rem; gap: 0.5rem; flex-wrap: wrap; flex-shrink: 0; }
+        .day-btn { padding: 0.4rem 0.8rem; border: 2px solid var(--border-color); background: white; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease; }
+        .day-btn.active { background: #007bff; color: white; border-color: #007bff; }
+        .day-btn:hover { background: #f8f9fa; }
+        .day-btn.active:hover { background: #0056b3; }
+        
+        table { flex: 1; min-height: 0; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+        table thead { flex-shrink: 0; display: block; position: sticky; top: 0; z-index: 20; background: white; }
+        
+        /* --- MODIFICATION 1 --- */
+        table tbody { 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; /* Changed from 'block' */
+            flex-direction: column; /* Added */
         }
-        function renderLegends() {
-          /*...*/
+        
+        /* --- MODIFICATION 2 --- */
+        table tr { 
+            display: flex; 
+            width: 100%; 
+            flex: 1; /* Added to make rows fill available space */
         }
-        function updateCursorPosition() {
-          /*...*/
-        }
-        renderDesktopView = () => {
-          const plannerHead = document.getElementById("planner-head");
-          const plannerBody = document.getElementById("planner-body");
-          let headHtml = '<tr><th class="time-col">Zeit</th>';
-          DAYS.forEach((day) => (headHtml += `<th>${day}</th>`));
-          plannerHead.innerHTML = headHtml + "</tr>";
-          const grid = Array.from({ length: END_HOUR - START_HOUR + 1 }, () =>
-            Array(DAYS.length).fill(null)
-          );
-          scheduleData.forEach((event) => {
-            if (event.start < START_HOUR) return;
-            const duration = event.end - event.start;
-            if (duration <= 0) return;
-            const gridRow = event.start - START_HOUR;
-            if (grid[gridRow] && grid[gridRow][event.day] === null) {
-              grid[gridRow][event.day] = { ...event, rowspan: duration };
-              for (let i = 1; i < duration; i++) {
-                if (gridRow + i < grid.length)
-                  grid[gridRow + i][event.day] = "occupied";
-              }
+
+        .time-cell { width: 25%; font-size: 0.75rem; }
+        .day-column { display: none; } /* Hide all day columns initially */
+        .day-column.active { display: table-cell; width: 75%; } /* Show only active day */
+        .day-column[data-day="all"] { display: table-cell !important; width: 75%; } /* Always show 'all' columns */
+        td, th { padding: 0.5rem; font-size: 0.8rem; }
+        p { line-height: 1.2; }
+        p b { font-size: 0.85rem; margin-bottom: 0.25rem; }
+        thead th { font-size: 0.9rem; height: auto; padding: 0.75rem 0.5rem; }
+        .erholungstag, .wochenend-start { font-size: 0.9rem; }
+        td:hover { transform: none; box-shadow: none; }
+    }
+
+    @media screen and (min-width: 769px) and (max-height: 800px) {
+        body { padding: 0.5rem; }
+        h1 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        table { height: calc(100vh - 3.5rem); }
+        td, th { padding: 4px 6px; font-size: 8pt; }
+        p b { font-size: 8.5pt; margin-bottom: 1px; }
+        .time-cell { font-size: 7pt; }
+        thead th { font-size: 9pt; height: 35px; }
+        .erholungstag { font-size: 1rem; }
+        .wochenend-start { font-size: 0.9rem; }
+        .mobile-nav { display: none; }
+    }
+
+    @media screen and (max-height: 700px) {
+        body { padding: 0.25rem; }
+        h1 { font-size: 1.1rem; margin-bottom: 0.25rem; }
+        table { height: calc(100vh - 2.5rem); }
+        td, th { padding: 3px 4px; font-size: 7pt; }
+        p { line-height: 1.2; }
+        p b { font-size: 7.5pt; }
+        .time-cell { font-size: 6pt; }
+        thead th { font-size: 8pt; height: 30px; }
+        .erholungstag { font-size: 0.9rem; }
+        .wochenend-start { font-size: 0.8rem; }
+        .mobile-nav { display: none; }
+    }
+    
+    @media screen and (min-width: 769px) {
+        .mobile-nav { display: none; }
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Weekly Schedule V4</h1>
+
+<!-- Mobile Navigation - only visible on mobile -->
+<div class="mobile-nav">
+    <button class="day-btn" data-day="1">Mo</button>
+    <button class="day-btn" data-day="2">Di</button>
+    <button class="day-btn" data-day="3">Mi</button>
+    <button class="day-btn" data-day="4">Do</button>
+    <button class="day-btn" data-day="5">Fr</button>
+    <button class="day-btn" data-day="6">Sa</button>
+    <button class="day-btn" data-day="0">So</button>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th class="header-cell">Zeit</th>
+            <th class="header-cell day-column" data-day="1">Montag</th>
+            <th class="header-cell day-column" data-day="2">Dienstag</th>
+            <th class="header-cell day-column" data-day="3">Mittwoch</th>
+            <th class="header-cell day-column" data-day="4">Donnerstag</th>
+            <th class="header-cell day-column" data-day="5">Freitag</th>
+            <th class="header-cell day-column" data-day="6">Samstag</th>
+            <th class="header-cell day-column" data-day="0">Sonntag</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="time-cell"><p>21:30 - 06:00</p></td>
+            <td colspan="7" class="cell-sleep text-light day-column" data-day="all" style="text-align: center; vertical-align: middle;"><p><b>🌙 Schlafen</b></p></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>06:00 - 07:00</p></td>
+            <td colspan="7" class="cell-routine day-column" data-day="all" style="text-align: center; vertical-align: middle;"><p><b>✨ Morgenroutine</b>Aufstehen, Wasser, Duschen, Anziehen, Snap.</p></td>
+
+        </tr>
+        <tr>
+            <td class="time-cell"><p>07:00 - 07:30</p></td>
+            <td colspan="7" class="cell-meal text-light day-column" data-day="all" style="text-align:center;"><p><b>🥐 Frühstück</b></p></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>07:30 - 09:30</p></td>
+            <td class="cell-p1-fsb day-column" data-day="1"><p><b>🥇 Prio 1: Formale Sprachen & Ber.</b>(Fokus-Block)</p></td>
+            <td class="cell-p1-fsb day-column" data-day="2"><p><b>🥇 Prio 1: Formale Sprachen & Ber.</b>(Fokus-Block)</p></td>
+            <td class="cell-p1-fsb day-column" data-day="3"><p><b>🥇 Prio 1: Formale Sprachen & Ber.</b>(Fokus-Block)</p></td>
+            <td class="cell-p1-fsb day-column" data-day="4"><p><b>🥇 Prio 1: Formale Sprachen & Ber.</b>(Fokus-Block)</p></td>
+            <td class="cell-p1-fsb day-column" data-day="5"><p><b>🥇 Prio 1: Formale Sprachen & Ber.</b>(Fokus-Block)</p></td>
+            <td class="cell-review text-light day-column" data-day="6"><p><b>📅 Wochen-Review & Planung</b>1. Analyse: Was lief gut/schlecht?<br/>2. Offene Aufgaben erledigen.<br/>3. Nächste Woche planen.</p></td>
+            <td class="erholungstag day-column" data-day="0"><p><b>🧘‍♂️ ERHOLUNGSTAG</b></p></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>09:30 - 09:45</p></td>
+            <td class="cell-break day-column" data-day="1"><p><b>☕ Kurze Pause</b>(Dehnen, Wasser holen, lüften)</p></td>
+            <td class="cell-break day-column" data-day="2"><p><b>☕ Kurze Pause</b>(Dehnen, Wasser holen, lüften)</p></td>
+            <td class="cell-break day-column" data-day="3"><p><b>☕ Kurze Pause</b>(Dehnen, Wasser holen, lüften)</p></td>
+            <td class="cell-break day-column" data-day="4"><p><b>☕ Kurze Pause</b>(Dehnen, Wasser holen, lüften)</p></td>
+            <td class="cell-break day-column" data-day="5"><p><b>☕ Kurze Pause</b>(Dehnen, Wasser holen, lüften)</p></td>
+            <td class="cell-break day-column" data-day="6"><p><b>☕ Kurze Pause</b>(Dehnen, Wasser holen, lüften)</p></td>
+            <td class="cell-freetime day-column" data-day="0"></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>09:45 - 11:15</p></td>
+            <td class="cell-p2-is day-column" data-day="1"><p><b>🥈 Prio 2: Informationssysteme</b></p></td>
+            <td class="cell-p2-aud day-column" data-day="2"><p><b>🥈 Prio 2: Algorithmen & D.</b></p></td>
+            <td class="cell-p2-is day-column" data-day="3"><p><b>🥈 Prio 2: Informationssysteme</b></p></td>
+            <td class="cell-p2-aud day-column" data-day="4"><p><b>🥈 Prio 2: Algorithmen & D.</b></p></td>
+            <td class="cell-review text-light day-column" data-day="5"><p><b>🔄 Prio 2: Wiederholung IS & AuD</b></p></td>
+            <td class="cell-freetime day-column" data-day="6" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+            <td class="cell-freetime day-column" data-day="0" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>11:15 - 12:30</p></td>
+            <td class="cell-meal text-light day-column" data-day="1" style="text-align:center;"><p><b>🥗 Mittagspause & Essen</b></p></td>
+            <td class="cell-meal text-light day-column" data-day="2" style="text-align:center;"><p><b>🥗 Mittagspause & Essen</b></p></td>
+            <td class="cell-meal text-light day-column" data-day="3" style="text-align:center;"><p><b>🥗 Mittagspause & Essen</b></p></td>
+            <td class="cell-meal text-light day-column" data-day="4" style="text-align:center;"><p><b>🥗 Mittagspause & Essen</b></p></td>
+            <td class="cell-meal text-light day-column" data-day="5" style="text-align:center;"><p><b>🥗 Mittagspause & Essen</b></p></td>
+            <td class="cell-freetime day-column" data-day="6" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+            <td class="cell-freetime day-column" data-day="0" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>12:30 - 14:00</p></td>
+            <td class="cell-p3-cg day-column" data-day="1"><p><b>🥉 Prio 3: Computergrafik</b></p></td>
+            <td class="cell-p4-w2t2 day-column" data-day="2"><p><b>Prio 4: W2T2</b></p></td>
+            <td class="cell-p3-cg day-column" data-day="3"><p><b>🥉 Prio 3: Computergrafik</b></p></td>
+            <td class="cell-p4-w2t2 day-column" data-day="4"><p><b>Prio 4: W2T2</b></p></td>
+            <td class="cell-review text-light day-column" data-day="5"><p><b>🔄 Prio 3/4: Wiederholung CG & W2T2</b></p></td>
+            <td class="cell-freetime day-column" data-day="6" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+            <td class="cell-freetime day-column" data-day="0" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>14:00 - 16:00</p></td>
+            <td class="cell-review text-light day-column" data-day="1"><p><b>💡 Flex-Block: Übungen & Vertiefung</b>(Schwierigste Aufgabe des Tages zuerst!)</p></td>
+            <td class="cell-review text-light day-column" data-day="2"><p><b>💡 Flex-Block: Übungen & Vertiefung</b>(Schwierigste Aufgabe des Tages zuerst!)</p></td>
+            <td class="cell-review text-light day-column" data-day="3"><p><b>💡 Flex-Block: Übungen & Vertiefung</b>(Schwierigste Aufgabe des Tages zuerst!)</p></td>
+            <td class="cell-review text-light day-column" data-day="4"><p><b>💡 Flex-Block: Übungen & Vertiefung</b>(Schwierigste Aufgabe des Tages zuerst!)</p></td>
+            <td class="cell-review text-light day-column" data-day="5"><p><b>💡 Flex-Block: Übungen & Vertiefung</b>(Schwierigste Aufgabe des Tages zuerst!)</p></td>
+            <td class="cell-freetime day-column" data-day="6" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+            <td class="cell-freetime day-column" data-day="0" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>16:00 - 19:00</p></td>
+            <td class="cell-errands text-light day-column" data-day="1"><p><b>🛒 Feierabend & Erledigungen</b>(Einkaufen etc.)</p></td>
+            <td class="cell-sport text-light day-column" data-day="2"><p><b>🏋️‍♂️ Feierabend & Sport</b></p></td>
+            <td class="cell-errands text-light day-column" data-day="3"><p><b>🛒 Feierabend & Erledigungen</b></p></td>
+            <td class="cell-sport text-light day-column" data-day="4"><p><b>🤸‍♀️ Feierabend & Sport</b></p></td>
+            <td class="wochenend-start day-column" data-day="5"><p>Wochenend-Start!</p></td>
+            <td class="cell-freetime day-column" data-day="6" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+            <td class="cell-freetime day-column" data-day="0" style="vertical-align: middle; font-size: 1.2rem;"><p><b>🎉<br/>Freizeit / Soziales / Hobbies</b></p></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>19:00 - 21:00</p></td>
+            <td colspan="7" class="cell-meal text-light day-column" data-day="all"><p><b>🍲 Abendessen & Entspannung</b> (Anime, Games)</p></td>
+        </tr>
+        <tr>
+            <td class="time-cell"><p>21:00 - 21:30</p></td>
+            <td colspan="7" class="cell-routine day-column" data-day="all"><p><b>📖 Abendroutine</b>Aufräumen, Sachen für morgen richten, Plan ansehen (2 Min), Lesen/Entspannen.</p></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if we're on mobile (screen width <= 768px)
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+    
+    // Get current day of week (0 = Sunday, 1 = Monday, etc.)
+    function getCurrentDay() {
+        return new Date().getDay();
+    }
+    
+    // Show specific day column
+    function showDay(dayNumber) {
+        if (!isMobile()) return; // Only apply on mobile
+        
+        // Hide all day columns
+        const dayColumns = document.querySelectorAll('.day-column');
+        dayColumns.forEach(col => {
+            if (col.dataset.day === 'all') {
+                col.style.display = 'table-cell'; // Always show "all" columns (meals, sleep, etc.)
+            } else {
+                col.classList.remove('active');
             }
-          });
-          let bodyHtml = "";
-          for (let hour = START_HOUR; hour <= END_HOUR; hour++) {
-            bodyHtml += `<tr><td class="time-col">${hour}:00</td>`;
-            for (let day = 0; day < DAYS.length; day++) {
-              const cell = grid[hour - START_HOUR][day];
-              if (cell === "occupied") continue;
-              if (cell) {
-                bodyHtml += `<td rowspan="${
-                  cell.rowspan
-                }"><div class="block type-${
-                  cell.type
-                }" data-event='${JSON.stringify(cell)}'>${
-                  cell.icon ? `<i class="${cell.icon}"></i>` : ""
-                }<span>${cell.title}</span></div></td>`;
-              } else {
-                bodyHtml += "<td></td>";
-              }
-            }
-            bodyHtml += "</tr>";
-          }
-          plannerBody.innerHTML = bodyHtml;
-          desktopWrapper.appendChild(timeCursor);
-        };
-        showPopup = (eventData) => {
-          const event = JSON.parse(eventData);
-          document.getElementById("popup-title").textContent = event.title;
-          document.getElementById(
-            "popup-time"
-          ).textContent = `Zeit: ${event.start}:00 - ${event.end}:00`;
-          const locEl = document.getElementById("popup-location");
-          const detEl = document.getElementById("popup-details");
-          locEl.textContent = event.location ? `Ort: ${event.location}` : "";
-          detEl.textContent = event.details ? `Details: ${event.details}` : "";
-          locEl.style.display = event.location ? "block" : "none";
-          detEl.style.display = event.details ? "block" : "none";
-          popupOverlay.classList.add("visible");
-        };
-        renderLegends = () => {
-          const legendHtml = Object.entries(LEGEND_DATA)
-            .map(([type, { name }]) => {
-              const isStudy = type === "study";
-              const stripedClass = isStudy ? "striped" : "";
-              const bgColor = isStudy
-                ? "var(--color-study-bg)"
-                : `var(--color-${type})`;
-              return `<div class="legend-item"><div class="legend-color ${stripedClass}" style="background-color: ${bgColor};"></div><span>${name}</span></div>`;
-            })
-            .join("");
-          document.getElementById("legend-container").innerHTML = legendHtml;
-          document.getElementById("sheet-legend-content").innerHTML =
-            legendHtml;
-        };
-        updateCursorPosition = () => {
-          const now = new Date();
-          let todayIndex = now.getDay() === 0 ? 6 : now.getDay() - 1;
-          const currentHour = now.getHours();
-          const currentMinute = now.getMinutes();
-          if (
-            todayIndex >= DAYS.length ||
-            currentHour < START_HOUR ||
-            currentHour >= END_HOUR + 1
-          ) {
-            timeCursor.style.display = "none";
-            return;
-          }
-          const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
-          const minutesFromStart =
-            (currentHour - START_HOUR) * 60 + currentMinute;
-          if (isMobile) {
-            const mobileHourHeight = parseInt(
-              getComputedStyle(document.documentElement).getPropertyValue(
-                "--mobile-hour-height"
-              )
-            );
-            const topPosition = (minutesFromStart / 60) * mobileHourHeight;
-            timeCursor.style.top = `${topPosition}px`;
-            timeCursor.style.left = "60px";
-            timeCursor.style.width = "calc(100% - 60px)";
-            timeCursor.style.display =
-              currentDayIndex === todayIndex ? "block" : "none";
-          } else {
-            const headerRow = document.querySelector("#planner-head tr");
-            const plannerBody = document.getElementById("planner-body");
-            if (!headerRow || !plannerBody.rows.length) return;
-            const totalBodyHeight = plannerBody.offsetHeight;
-            const numberOfRows = END_HOUR - START_HOUR + 1;
-            const rowHeight = totalBodyHeight / numberOfRows;
-            const tableHeaderTop = headerRow.offsetHeight;
-            const topPosition =
-              tableHeaderTop + (minutesFromStart / 60) * rowHeight;
-            timeCursor.style.top = `${topPosition}px`;
-            const dayHeaders = Array.from(
-              headerRow.querySelectorAll("th:not(.time-col)")
-            );
-            const todayHeader = dayHeaders[todayIndex];
-            if (!todayHeader) return;
-            timeCursor.style.left = `${todayHeader.offsetLeft}px`;
-            timeCursor.style.width = `${todayHeader.offsetWidth}px`;
-            timeCursor.style.display = "block";
-          }
-        };
-
-        function renderMobileView(dayIndex) {
-          dayTitleEl.textContent = DAYS[dayIndex];
-          const eventsToday = scheduleData
-            .filter((e) => e.day === dayIndex)
-            .sort((a, b) => a.start - b.start);
-          let listHtml = '<div class="mobile-event-list">';
-          for (let hour = START_HOUR; hour <= END_HOUR; hour++) {
-            listHtml += `<div class="mobile-time-marker">${hour}:00</div>`;
-          }
-          const mobileHourHeight = parseInt(
-            getComputedStyle(document.documentElement).getPropertyValue(
-              "--mobile-hour-height"
-            )
-          );
-
-          eventsToday.forEach((event, index) => {
-            const duration = event.end - event.start;
-            const top = (event.start - START_HOUR) * mobileHourHeight + 5;
-            const height = duration * mobileHourHeight - 10;
-            const zIndex = eventsToday.length - index;
-
-            listHtml += `
-                      <div class="mobile-event type-${
-                        event.type
-                      }" style="top: ${top}px; height: ${height}px; z-index: ${zIndex};" data-event='${JSON.stringify(
-              event
-            )}'>
-                          <div class="mobile-event-header">
-                              ${
-                                event.icon
-                                  ? `<i class="${event.icon}"></i>`
-                                  : ""
-                              }
-                              <span class="mobile-event-title">${
-                                event.title
-                              }</span>
-                          </div>
-                          <div class="mobile-event-time">${event.start}:00 - ${
-              event.end
-            }:00</div>
-                      </div>`;
-          });
-
-          mobileWrapper.innerHTML = listHtml + "</div>";
-          mobileWrapper.appendChild(timeCursor);
-        }
-
-        function setupEventListeners() {
-          document.body.addEventListener("click", (e) => {
-            const eventTarget = e.target.closest("[data-event]");
-            if (eventTarget) showPopup(eventTarget.dataset.event);
-          });
-          document
-            .querySelector(".popup-close")
-            .addEventListener("click", () =>
-              popupOverlay.classList.remove("visible")
-            );
-          popupOverlay.addEventListener("click", (e) => {
-            if (e.target === popupOverlay)
-              popupOverlay.classList.remove("visible");
-          });
-          document.getElementById("prev-day").addEventListener("click", () => {
-            currentDayIndex = (currentDayIndex - 1 + DAYS.length) % DAYS.length;
-            renderMobileView(currentDayIndex);
-            updateCursorPosition();
-          });
-          document.getElementById("next-day").addEventListener("click", () => {
-            currentDayIndex = (currentDayIndex + 1) % DAYS.length;
-            renderMobileView(currentDayIndex);
-            updateCursorPosition();
-          });
-          const legendToggleBtn = document.getElementById("legend-toggle-btn");
-          const sheetHandle = document.getElementById("sheet-handle");
-          function showLegendSheet() {
-            legendOverlay.classList.add("visible");
-          }
-          function hideLegendSheet() {
-            legendOverlay.classList.remove("visible");
-          }
-          legendToggleBtn.addEventListener("click", showLegendSheet);
-          legendOverlay.addEventListener("click", (e) => {
-            if (e.target === legendOverlay) hideLegendSheet();
-          });
-          sheetHandle.addEventListener("click", hideLegendSheet);
-        }
-
-        function renderUI() {
-          if (window.innerWidth <= MOBILE_BREAKPOINT) {
-            renderMobileView(currentDayIndex);
-          } else {
-            renderDesktopView();
-          }
-          updateCursorPosition();
-        }
-
-        renderLegends();
-        renderUI();
-        setupEventListeners();
-        setInterval(updateCursorPosition, 60000);
-        let resizeTimeout;
-        window.addEventListener("resize", () => {
-          clearTimeout(resizeTimeout);
-          resizeTimeout = setTimeout(renderUI, 100);
         });
-      });
-    </script>
-  </body>
+        
+        // Show selected day columns
+        const selectedColumns = document.querySelectorAll(`.day-column[data-day="${dayNumber}"]`);
+        selectedColumns.forEach(col => {
+            col.classList.add('active');
+        });
+        
+        // Update button states
+        const dayButtons = document.querySelectorAll('.day-btn');
+        dayButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.day === dayNumber.toString()) {
+                btn.classList.add('active');
+            }
+        });
+    }
+    
+    // Initialize mobile view
+    function initMobile() {
+        if (isMobile()) {
+            const currentDay = getCurrentDay();
+            showDay(currentDay);
+        } else {
+            // On desktop, show all columns
+            const dayColumns = document.querySelectorAll('.day-column');
+            dayColumns.forEach(col => {
+                col.style.display = 'table-cell';
+                col.classList.remove('active');
+            });
+        }
+    }
+    
+    // Add click handlers to day buttons
+    const dayButtons = document.querySelectorAll('.day-btn');
+    dayButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const dayNumber = parseInt(this.dataset.day);
+            showDay(dayNumber);
+        });
+    });
+    
+    // Initialize on load
+    initMobile();
+    
+    // Re-initialize on window resize
+    window.addEventListener('resize', function() {
+        setTimeout(initMobile, 100); // Small delay to ensure resize is complete
+    });
+});
+</script>
+
+</body>
 </html>
